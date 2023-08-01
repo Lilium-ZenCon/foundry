@@ -1,3 +1,4 @@
+@enums/=src/enums
 @libraries/=src/libraries
 @interfaces/=src/interfaces
 @chainlink/contracts/=lib/chainlink/contracts/src/v0.8/

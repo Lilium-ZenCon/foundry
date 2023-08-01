@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.20;
 
-import {TransactionData} from "@libraries/storage/TransactionData.sol";
 import {HardwareData} from "@libraries/storage/HardwareData.sol";
 
 library CompanyData {
@@ -14,6 +13,7 @@ library CompanyData {
         string industry;
         uint256 allowance;
         uint256 compensation;
+        uint256 auctionDuration;
         address cartesiAuction;
         address cartesiInputBox;
         address cartesiVerifier;
@@ -23,6 +23,5 @@ library CompanyData {
         mapping(address => address[]) agents; // this can be replaced by descentralized sqlite (input with inspect state)
         mapping(address => address[]) hardwareDevices; // this can be replaced by descentralized sqlite (input with inspect state)
         mapping(address => HardwareData.Hardware[]) verificationHistory; // this can be replaced by descentralized sqlite (input with inspect state)
-        mapping(address => TransactionData.Transaction[]) transactionHistory; // this can be replaced by descentralized sqlite (input with inspect state)
     }
 }
