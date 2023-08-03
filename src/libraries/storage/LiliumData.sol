@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 
 import {CertifierData} from "@libraries/storage/CertifierData.sol";
 
-library LiliumStructure {
+library LiliumData {
     struct Lilium {
         string cid;
         string name;

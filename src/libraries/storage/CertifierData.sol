@@ -8,7 +8,5 @@ library CertifierData {
     struct Certifier {
         string cid;
         string name;
-        mapping(address => bool) agents;
-        mapping(address => CompanyData.Company[]) clients;
     }
 }

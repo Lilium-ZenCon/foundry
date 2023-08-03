@@ -1,71 +1,57 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import {InputBox} from "@cartesi/contracts/inputs/InputBox.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {TokenData} from "@libraries/storage/TokenData.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract OffsetCarbonToken is ERC20, AccessControl {
+    TokenData.Token public token;
 
-    address carbonTraceOwner; // variable to store contract owner
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE"); // variable to store minter role
-    mapping(address => bool) private checkRegisterContractAddress;
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    constructor(address _carbonTraceOwner) ERC20("OffsetCarbonToken", "OCT") { //adicionar os outros address depois
-        carbonTraceOwner = _carbonTraceOwner;
+    error InsufficientAmount(uint256 _amount);
+
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _decimals,
+        address _admin
+    ) ERC20(_name, _symbol) {
+        token.decimals = _decimals;
+        token.admin = _admin;
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(ADMIN_ROLE, _admin);
     }
 
-    // modifier to restrict access to the owner
-    modifier onlyCarbonTraceOwner() {
-        msg.sender == carbonTraceOwner;
-        _;
+    function setCompany(address _company) external onlyRole(ADMIN_ROLE) {
+        _grantRole(MINTER_ROLE, _company);
     }
 
-    // Auxiliar function to set register contract address on auth mapping
-    function setRegisterContractAddress(address _newContract) external {
-        checkRegisterContractAddress[_newContract] = true;
+    function setAdmin(address _newAdmin) public onlyRole(ADMIN_ROLE) {
+        _grantRole(DEFAULT_ADMIN_ROLE, _newAdmin);
+        _grantRole(ADMIN_ROLE, _newAdmin);
     }
 
-    // function to update contract controller
-    function updateController(
-        address _newController
-    ) public onlyCarbonTraceOwner {
-        _grantRole(DEFAULT_ADMIN_ROLE, _newController);
+    function removeAdmin(address _admin) public onlyRole(ADMIN_ROLE) {
+        _revokeRole(DEFAULT_ADMIN_ROLE, _admin);
+        _revokeRole(ADMIN_ROLE, _admin);
     }
 
-    // function to set minter contract
-    function setMinter(address _newMinter) external {
-        require(
-            checkRegisterContractAddress[msg.sender] == true,
-            "Permission denied"
-        );
-        _grantRole(MINTER_ROLE, _newMinter);
+    function mint(address _to, uint256 _amount) public onlyRole(MINTER_ROLE) {
+        _mint(_to, _amount);
     }
 
-    function grantMinterRole(address _grantAddress) public onlyRole(DEFAULT_ADMIN_ROLE){
-        _grantRole(MINTER_ROLE, _grantAddress);
+    function burn(address _sender, uint256 _amount) external {
+        if (balanceOf(_sender) < _amount) {
+            revert InsufficientAmount(_amount);
+        } else {
+            _burn(_sender, _amount);
+        }
     }
 
-    function revokeMinterRole(address _revokeAddress) public onlyRole(DEFAULT_ADMIN_ROLE){
-        _revokeRole(MINTER_ROLE, _revokeAddress);
-    }
-
-    // function to mint tokens if the user has a role
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
-        _mint(to, amount);
-    }
-
-    // function to retire OffSetCarbonTokens and store this transaction information
-    function retire(uint256 amount) public virtual {
-        require(
-            amount >= 0,
-            "The wallet does not have enough funds for this operation"
-        );
-        _burn(_msgSender(), amount);
-    }
-
-    // function to override token decimals
     function decimals() public pure override returns (uint8) {
-        return 2;
+        return 3;
     }
 }

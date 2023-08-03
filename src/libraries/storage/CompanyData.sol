@@ -20,7 +20,6 @@ library CompanyData {
         address cartesiERC20Portal;
         address cartesiEtherPortal;
         address parityRouter;
-        mapping(address => address[]) agents; // this can be replaced by descentralized sqlite (input with inspect state)
         mapping(address => address[]) hardwareDevices; // this can be replaced by descentralized sqlite (input with inspect state)
         mapping(address => HardwareData.Hardware[]) verificationHistory; // this can be replaced by descentralized sqlite (input with inspect state)
     }
