@@ -29,6 +29,7 @@ contract Company is AccessControl {
 
     error AuctionHappening();
     error AuctionNotHappening();
+    error RetireFailed(address _sender, uint256 _amount);
     error DontHaveSuficientAllowance(uint256 _amount);
     error WithdrawFailed(address _sender, uint256 _amount);
     error InvalidAmountPercentage(uint8 _amountPercentage);
@@ -161,10 +162,13 @@ contract Company is AccessControl {
         }
     }
 
-    function retire(uint256 _amount) public {
-        IERC20(company.token).approve(address(this), _amount);
-        ICarbonCredit(company.token).burn;
-        emit Retire(msg.sender, _amount);
+    function retire(uint256 _amount) public payable {
+        (bool success, ) = company.token.delegatecall(
+            abi.encodeWithSignature("retire(uint256 _amount)", _amount)
+        );
+        if (success == false) {
+            revert RetireFailed(msg.sender, _amount);
+        }
     }
 
     function quoteParity() public view returns (int256) {
@@ -186,10 +190,7 @@ contract Company is AccessControl {
         if (auctionState == AuctionState.ACTIVE) {
             revert AuctionHappening();
         } else {
-            ICarbonCredit(company.token).approve(
-                company.cartesiERC20Portal,
-                _amount
-            );
+            IERC20(company.token).approve(company.cartesiERC20Portal, _amount);
             setAuctionDuration(_duration);
             bytes memory _newAuctionHash = abi.encodePacked(
                 company.auctionDuration,

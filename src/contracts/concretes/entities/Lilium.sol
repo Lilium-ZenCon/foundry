@@ -46,16 +46,20 @@ contract Lilium is AccessControl {
         address _agent,
         string memory tokenName,
         string memory tokenSymbol,
-        uint256 decimals,
-        address tokenAdmin
+        uint256 decimals
     ) public onlyRole(AGENT_ROLE) {
         CarbonCredit token = new CarbonCredit(
             tokenName,
             tokenSymbol,
             decimals,
-            tokenAdmin
+            _agent
         );
-        Certifier certifier = new Certifier(_cid, _name, _agent, address(token));
+        Certifier certifier = new Certifier(
+            _cid,
+            _name,
+            _agent,
+            address(token)
+        );
         setClient(address(certifier));
     }
 }

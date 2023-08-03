@@ -3,10 +3,9 @@ pragma solidity 0.8.20;
 
 import {TokenData} from "@libraries/storage/TokenData.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract CarbonCredit is AccessControl, ERC20, ERC20Burnable {
+contract CarbonCredit is AccessControl, ERC20 {
     TokenData.Token public token;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -44,11 +43,11 @@ contract CarbonCredit is AccessControl, ERC20, ERC20Burnable {
         _mint(_to, _amount);
     }
 
-    function burn(address _sender, uint256 _amount) external {
-        if (balanceOf(_sender) < _amount) {
+    function retire(uint256 _amount) external {
+        if (balanceOf(_msgSender()) <= _amount) {
             revert InsufficientAmount(_amount);
         } else {
-            burnFrom(_sender, _amount);
+            _burn(_msgSender(), _amount);
         }
     }
 

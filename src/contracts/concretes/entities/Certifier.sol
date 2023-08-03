@@ -16,7 +16,14 @@ contract Certifier is AccessControl {
 
     bytes32 constant AGENT_ROLE = keccak256("AGENT_ROLE");
 
-    constructor(string memory _cid, string memory _name, address _token, address _agent) {
+    error SetMinterFailed(address _company);
+
+    constructor(
+        string memory _cid,
+        string memory _name,
+        address _token,
+        address _agent
+    ) {
         certifier.cid = _cid;
         certifier.name = _name;
         certifier.token = _token;
@@ -42,6 +49,15 @@ contract Certifier is AccessControl {
         clients[address(this)].push(_client);
     }
 
+    function setMinter(address _company) private {
+        (bool success, ) = certifier.token.delegatecall(
+            abi.encodeWithSignature("setCompany(address _company)", _company)
+        );
+        if (success == false) {
+            revert SetMinterFailed(_company);
+        }
+    }
+
     function newCompany(
         string memory _cid,
         string memory _name,
@@ -63,5 +79,6 @@ contract Certifier is AccessControl {
             _agent
         );
         setClient(address(company));
+        setMinter(address(company));
     }
 }
