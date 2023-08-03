@@ -16,9 +16,10 @@ contract Certifier is AccessControl {
 
     bytes32 constant AGENT_ROLE = keccak256("AGENT_ROLE");
 
-    constructor(string memory _cid, string memory _name, address _agent) {
+    constructor(string memory _cid, string memory _name, address _token, address _agent) {
         certifier.cid = _cid;
         certifier.name = _name;
+        certifier.token = _token;
         _grantRole(DEFAULT_ADMIN_ROLE, _agent);
         _grantRole(AGENT_ROLE, _agent);
     }

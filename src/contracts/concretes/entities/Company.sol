@@ -162,7 +162,8 @@ contract Company is AccessControl {
     }
 
     function retire(uint256 _amount) public {
-        ICarbonCredit(company.token).burn(msg.sender, _amount);
+        IERC20(company.token).approve(address(this), _amount);
+        ICarbonCredit(company.token).burn;
         emit Retire(msg.sender, _amount);
     }
 
@@ -185,10 +186,6 @@ contract Company is AccessControl {
         if (auctionState == AuctionState.ACTIVE) {
             revert AuctionHappening();
         } else {
-            ICarbonCredit(company.token).allowance(
-                msg.sender,
-                company.cartesiERC20Portal
-            );
             ICarbonCredit(company.token).approve(
                 company.cartesiERC20Portal,
                 _amount

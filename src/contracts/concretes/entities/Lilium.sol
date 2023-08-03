@@ -5,6 +5,7 @@ pragma solidity ^0.8.20;
 import {IPFS} from "@libraries/function/IPFS.sol";
 import {LiliumData} from "@libraries/storage/LiliumData.sol";
 import {Certifier} from "@contracts/concretes/entities/Certifier.sol";
+import {CarbonCredit} from "@contracts/concretes/token/ERC20/CarbonCredit.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Lilium is AccessControl {
@@ -42,9 +43,19 @@ contract Lilium is AccessControl {
     function newCertifier(
         string memory _cid,
         string memory _name,
-        address _agent
+        address _agent,
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint256 decimals,
+        address tokenAdmin
     ) public onlyRole(AGENT_ROLE) {
-        Certifier certifier = new Certifier(_cid, _name, _agent);
+        CarbonCredit token = new CarbonCredit(
+            tokenName,
+            tokenSymbol,
+            decimals,
+            tokenAdmin
+        );
+        Certifier certifier = new Certifier(_cid, _name, _agent, address(token));
         setClient(address(certifier));
     }
 }

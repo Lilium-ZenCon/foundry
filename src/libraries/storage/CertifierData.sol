@@ -8,5 +8,6 @@ library CertifierData {
     struct Certifier {
         string cid;
         string name;
+        address token;
     }
 }

@@ -3,9 +3,10 @@ pragma solidity 0.8.20;
 
 import {TokenData} from "@libraries/storage/TokenData.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract OffsetCarbonToken is ERC20, AccessControl {
+contract CarbonCredit is AccessControl, ERC20, ERC20Burnable {
     TokenData.Token public token;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -14,15 +15,15 @@ contract OffsetCarbonToken is ERC20, AccessControl {
     error InsufficientAmount(uint256 _amount);
 
     constructor(
-        string memory _name,
-        string memory _symbol,
+        string memory _tokenName,
+        string memory _tokenSymbol,
         uint256 _decimals,
-        address _admin
-    ) ERC20(_name, _symbol) {
+        address _tokenAdmin
+    ) ERC20(_tokenName, _tokenSymbol) {
         token.decimals = _decimals;
-        token.admin = _admin;
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
-        _grantRole(ADMIN_ROLE, _admin);
+        token.admin = _tokenAdmin;
+        _grantRole(DEFAULT_ADMIN_ROLE, _tokenAdmin);
+        _grantRole(ADMIN_ROLE, _tokenAdmin);
     }
 
     function setCompany(address _company) external onlyRole(ADMIN_ROLE) {
@@ -47,11 +48,11 @@ contract OffsetCarbonToken is ERC20, AccessControl {
         if (balanceOf(_sender) < _amount) {
             revert InsufficientAmount(_amount);
         } else {
-            _burn(_sender, _amount);
+            burnFrom(_sender, _amount);
         }
     }
 
     function decimals() public pure override returns (uint8) {
-        return 3;
+        return 2;
     }
 }
