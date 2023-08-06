@@ -181,6 +181,8 @@ contract Company is AccessControl {
         emit NewBid(msg.sender, msg.value, _amountPercentage);
     }
 
+    // function hearbeat
+
     function withdraw(bytes calldata _payload, Proof calldata _proof) public {
         ICartesiDApp(company.cartesiAuction).executeVoucher(
             company.cartesiAuction,

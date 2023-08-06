@@ -14,6 +14,8 @@ contract CarbonCredit is AccessControl, ERC20 {
 
     error InsufficientAmount(uint256 _amount);
 
+    event Retire(address _sender, uint256 _amount);
+
     constructor(
         string memory _tokenName,
         string memory _tokenSymbol,
@@ -54,6 +56,7 @@ contract CarbonCredit is AccessControl, ERC20 {
             revert InsufficientAmount(_amount);
         } else {
             _burn(_msgSender(), _amount);
+            emit Retire(_msgSender(), _amount);
         }
     }
 
