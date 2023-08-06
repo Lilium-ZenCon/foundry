@@ -2,33 +2,51 @@
 
 pragma solidity ^0.8.20;
 
+import {ILilium} from "@interfaces/ILilium.sol";
 import {IPFS} from "@libraries/function/IPFS.sol";
-import {Company} from "@contracts/concretes/entities/Company.sol";
+import {ICarbonCredit} from "@interfaces/ICarbonCredit.sol";
 import {CompanyData} from "@libraries/storage/CompanyData.sol";
-
+import {IInputBox} from "@cartesi/contracts/inputs/IInputBox.sol";
+import {Company} from "@contracts/concretes/entities/Company.sol";
 import {CertifierData} from "@libraries/storage/CertifierData.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Certifier is AccessControl {
     CertifierData.Certifier public certifier;
 
-    mapping(address => address[]) clients;
-
-    bytes32 constant AGENT_ROLE = keccak256("AGENT_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant AGENT_ROLE = keccak256("AGENT_ROLE");
+    bytes32 public constant MASTER_ROLE = keccak256("MASTER_ROLE"); 
 
     error SetMinterFailed(address _company);
+
+    event NewCompany(address _compan);
 
     constructor(
         string memory _cid,
         string memory _name,
-        address _token,
-        address _agent
+        address _lilium,
+        address _agent,
+        address _masterAgent,
+        address _cartesiInputBox,
+        address _cartesiEtherPortal,
+        address _cartesiERC20Portal
     ) {
         certifier.cid = _cid;
         certifier.name = _name;
-        certifier.token = _token;
+        certifier.lilium = _lilium;
+        certifier.cartesiInputBox = _cartesiInputBox;
+        certifier.cartesiERC20Portal = _cartesiERC20Portal;
+        certifier.cartesiEtherPortal = _cartesiEtherPortal;
+        _grantRole(DEFAULT_ADMIN_ROLE, _masterAgent);
+        _grantRole(MASTER_ROLE, _masterAgent);
         _grantRole(DEFAULT_ADMIN_ROLE, _agent);
         _grantRole(AGENT_ROLE, _agent);
+    }
+
+    function setCartesi(address _cartesiCertifier) public onlyRole(MASTER_ROLE) {
+        certifier.cartesiCertifier = _cartesiCertifier;
+        ICarbonCredit(ILilium(certifier.lilium).getToken(address(this))).setCartesi(_cartesiCertifier);
     }
 
     function getURI() public view returns (string memory) {
@@ -45,23 +63,9 @@ contract Certifier is AccessControl {
         _revokeRole(AGENT_ROLE, _agent);
     }
 
-    function setClient(address _client) private {
-        clients[address(this)].push(_client);
-    }
-
-    function setMinter(address _company) private {
-        (bool success, ) = certifier.token.delegatecall(
-            abi.encodeWithSignature("setCompany(address _company)", _company)
-        );
-        if (success == false) {
-            revert SetMinterFailed(_company);
-        }
-    }
-
     function newCompany(
         string memory _cid,
         string memory _name,
-        address _token,
         string memory _country,
         string memory _industry,
         uint256 _allowance,
@@ -71,14 +75,17 @@ contract Certifier is AccessControl {
         Company company = new Company(
             _cid,
             _name,
-            _token,
+            ILilium(certifier.lilium).getToken(address(this)),
             _country,
             _industry,
             _allowance,
+            certifier.cartesiInputBox,
+            certifier.cartesiERC20Portal,
+            certifier.cartesiEtherPortal,
             _compensation,
             _agent
         );
-        setClient(address(company));
-        setMinter(address(company));
+        ICarbonCredit(ILilium(certifier.lilium).getToken(address(this))).grantRole(MINTER_ROLE, address(company));
+        emit NewCompany(address(company));
     }
 }

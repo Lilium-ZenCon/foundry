@@ -8,7 +8,9 @@ library LiliumData {
     struct Lilium {
         string cid;
         string name;
-        mapping(address => bool) agents;
-        mapping(address => CertifierData.Certifier[]) clients;
+        address cartesiInputBox;
+        address cartesiERC20Portal;
+        address cartesiEtherPortal;
+        address parityRouter;
     }
 }

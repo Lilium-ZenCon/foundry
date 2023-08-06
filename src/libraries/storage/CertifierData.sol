@@ -8,6 +8,10 @@ library CertifierData {
     struct Certifier {
         string cid;
         string name;
-        address token;
+        address lilium;
+        address cartesiInputBox;
+        address cartesiCertifier;
+        address cartesiERC20Portal;
+        address cartesiEtherPortal;
     }
 }

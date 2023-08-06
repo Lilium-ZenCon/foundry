@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.20;
 
-import {HardwareData} from "@libraries/storage/HardwareData.sol";
-
 library CompanyData {
     struct Company {
         string cid;
@@ -20,7 +18,5 @@ library CompanyData {
         address cartesiERC20Portal;
         address cartesiEtherPortal;
         address parityRouter;
-        mapping(address => address[]) hardwareDevices; // this can be replaced by descentralized sqlite (input with inspect state)
-        mapping(address => HardwareData.Hardware[]) verificationHistory; // this can be replaced by descentralized sqlite (input with inspect state)
     }
 }
