@@ -12,5 +12,6 @@ library LiliumData {
         address cartesiERC20Portal;
         address cartesiEtherPortal;
         address parityRouter;
+        address agent;
     }
 }

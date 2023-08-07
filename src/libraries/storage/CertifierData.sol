@@ -9,6 +9,8 @@ library CertifierData {
         string cid;
         string name;
         address lilium;
+        address agent;
+        address masterAgent;
         address cartesiInputBox;
         address cartesiCertifier;
         address cartesiERC20Portal;

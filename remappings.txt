@@ -1,4 +1,3 @@
-@enums/=src/enums
 @libraries/=src/libraries
 @interfaces/=src/interfaces
 @contracts/=src/contracts

@@ -21,16 +21,9 @@ contract Company is AccessControl {
     bytes32 constant HARDWARE_ROLE = keccak256("HARDWARE_ROLE");
     bytes32 constant VERIFIER_ROLE = keccak256("VERIFIER_ROLE");
 
-    error AuctionHappening();
-    error AuctionNotHappening();
-    error RetireFailed(address _sender, uint256 _amount);
     error DontHaveSuficientAllowance(uint256 _amount);
-    error WithdrawFailed(address _sender, uint256 _amount);
-    error InvalidAmountPercentage(uint8 _amountPercentage);
 
-    event FinishedAuction(address _sender);
     event Mint(address _sender, uint256 _amount);
-    event Retire(address _sender, uint256 _amount);
     event NewBid(address _sender, uint256 _amount, uint8 _amountPercentage);
     event VerifierVoucherExecuted(
         address _sender,
@@ -76,17 +69,6 @@ contract Company is AccessControl {
         return IPFS.getURI(company.cid);
     }
 
-    function addAgent(address _newAgent) public onlyRole(AGENT_ROLE) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _newAgent);
-        _grantRole(AGENT_ROLE, _newAgent);
-    }
-
-    function removeAgent(address _agent) public onlyRole(AGENT_ROLE) {
-        _revokeRole(DEFAULT_ADMIN_ROLE, _agent);
-        _revokeRole(AGENT_ROLE, _agent);
-    }
-
-    /////////////////////////// COMMON ///////////////////////////
     function setAuxiliarContracts(
         address _cartesiAuction,
         address _cartesiVerifier
@@ -97,7 +79,6 @@ contract Company is AccessControl {
         _grantRole(AUCTION_ROLE, _cartesiAuction);
     }
 
-    /////////////////////////// VERIFIER ///////////////////////////
     function increaseAllowance(
         uint256 _amount
     ) external onlyRole(VERIFIER_ROLE) {
@@ -136,7 +117,6 @@ contract Company is AccessControl {
         emit VerifierVoucherExecuted(msg.sender, _payload, _proof);
     }
 
-    /////////////////////////// BANK ///////////////////////////
     function mint(uint256 _amount) public onlyRole(AGENT_ROLE) {
         if (company.allowance < _amount) {
             revert DontHaveSuficientAllowance(_amount);
@@ -147,7 +127,6 @@ contract Company is AccessControl {
         }
     }
 
-    /////////////////////////// AUCTION ///////////////////////////
     function setAuctionDuration(uint256 _duration) private {
         company.auctionDuration = _duration * 1 hours;
     }
@@ -181,7 +160,15 @@ contract Company is AccessControl {
         emit NewBid(msg.sender, msg.value, _amountPercentage);
     }
 
-    // function hearbeat
+    function heartbeat() public {
+        bytes memory _heartbeatData = abi.encodePacked(
+            msg.sig
+        );
+        IInputBox(company.cartesiInputBox).addInput(
+            company.cartesiAuction,
+            _heartbeatData
+        );
+    }
 
     function withdraw(bytes calldata _payload, Proof calldata _proof) public {
         ICartesiDApp(company.cartesiAuction).executeVoucher(
