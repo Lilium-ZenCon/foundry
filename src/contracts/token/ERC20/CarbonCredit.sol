@@ -9,6 +9,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/interfaces/AggregatorV
 
 /**
  * @title Set Cartesi Cer
+ * @dev This contract is a insterface to interact with certifier cartesi machine, and other attributes of carbon credit
  */
 contract CarbonCredit is AccessControl, ERC20 {
     CarbonCreditData.CarbonCredit public token;

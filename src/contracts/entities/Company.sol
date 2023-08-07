@@ -13,6 +13,10 @@ import {IEtherPortal} from "@cartesi/contracts/portals/IEtherPortal.sol";
 import {IERC20Portal} from "@cartesi/contracts/portals/IERC20Portal.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
+/**
+ * @title Company
+ * @notice This contract is a insterface to interact with verifier and auction cartesi machine, and other attributes of company
+ */
 contract Company is AccessControl {
     CompanyData.Company public company;
 

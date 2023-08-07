@@ -10,6 +10,10 @@ import {IInputBox} from "@cartesi/contracts/inputs/IInputBox.sol";
 import {Company} from "@contracts/entities/Company.sol";
 import {CertifierData} from "@libraries/storage/CertifierData.sol";
 
+/**
+ * @title Certifier
+ * @notice This contract is responsible for create new company contract
+ */
 contract Certifier {
     CertifierData.Certifier public certifier;
 
