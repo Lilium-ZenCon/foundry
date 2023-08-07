@@ -7,7 +7,6 @@ import {CertifierData} from "@libraries/storage/CertifierData.sol";
 library LiliumData {
     struct Lilium {
         string cid;
-        string name;
         address cartesiInputBox;
         address cartesiERC20Portal;
         address cartesiEtherPortal;

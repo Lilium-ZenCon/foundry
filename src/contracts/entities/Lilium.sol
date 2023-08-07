@@ -19,7 +19,6 @@ contract Lilium {
 
     constructor(
         string memory _cid,
-        string memory _name,
         address _InputBox,
         address _EtherPortal,
         address _ERC20Portal,
@@ -27,7 +26,6 @@ contract Lilium {
         address _agent
     ) {
         lilium.cid = _cid;
-        lilium.name = _name;
         lilium.cartesiInputBox = _InputBox;
         lilium.cartesiEtherPortal = _EtherPortal;
         lilium.cartesiERC20Portal = _ERC20Portal;

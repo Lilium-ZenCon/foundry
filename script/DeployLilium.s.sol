@@ -18,7 +18,6 @@ contract DeployLilium is Script {
         vm.startBroadcast();
         new Lilium(
             _cid,
-            _name,
             _InputBox,
             _EtherPortal,
             _ERC20Portal,
