@@ -2,7 +2,11 @@
 
 pragma solidity 0.8.20;
 
-contract CarbonCreditData {
+/**
+ * @title CarbonCreditData
+ * @dev CarbonCreditData library to store CarbonCredit data
+ */
+library CarbonCreditData {
     struct CarbonCredit {
         uint256 totalSupply;
         uint256 decimals;

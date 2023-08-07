@@ -2,6 +2,10 @@
 
 pragma solidity ^0.8.20;
 
+/**
+ * @title CompanyData
+ * @dev CompanyData library to store Company data
+ */
 library CompanyData {
     struct Company {
         string cid;

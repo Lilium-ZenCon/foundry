@@ -7,6 +7,9 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {CarbonCreditData} from "@libraries/storage/CarbonCreditData.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/interfaces/AggregatorV3Interface.sol";
 
+/**
+ * @title Set Cartesi Cer
+ */
 contract CarbonCredit is AccessControl, ERC20 {
     CarbonCreditData.CarbonCredit public token;
 
@@ -31,22 +34,43 @@ contract CarbonCredit is AccessControl, ERC20 {
         _grantRole(DEFAULT_ADMIN_ROLE, _certifier);
     }
 
+    /**
+     * @notice Set Cartesi Certifier Contract
+     * @dev This function set cartesi certifier contract address after deploy, because it is not possible to set it before deploy since the cartesi machine is deployed later
+     * @param _cartesiCertifier address of cartesi certifier contract
+     */
     function setCartesi(
         address _cartesiCertifier
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         token.cartesiCertifier = _cartesiCertifier;
     }
 
+    /**
+     * @notice ETH-USD parity price
+     * @dev This function stream onchain ETH-USD parity price with chainlink Data Feed
+     * @return int256 ETH-USD parity price
+     */
     function quoteParity() public view returns (int256) {
         (, int price, , , ) = AggregatorV3Interface(token.parityRouter)
             .latestRoundData();
         return price / 1e8;
     }
 
+    /**
+     * @notice Token Decimals
+     * @dev This function returns token (CarbonCredit) decimals
+     * @return uint8 token decimals
+     */
     function decimals() public pure override returns (uint8) {
         return 2;
     }
 
+    /**
+     * @notice Mint Token
+     * @dev This function mint token (CarbonCredit) to an address intermediated by company contract
+     * @param _to company agent address to mint token
+     * @param _amount amount of token to mint
+     */
     function mint(address _to, uint256 _amount) public onlyRole(MINTER_ROLE) {
         _mint(_to, _amount);
     }
@@ -60,6 +84,13 @@ contract CarbonCredit is AccessControl, ERC20 {
         }
     }
 
+    /**
+     * @notice Transfer Token
+     * @dev This function transfer token (CarbonCredit) to an address and send the transaction information to cartesi machine
+     * @param to address to transfer token
+     * @param amount amount of token to transfer
+     * @return bool true if transfer is successful
+     */
     function transfer(
         address to,
         uint256 amount

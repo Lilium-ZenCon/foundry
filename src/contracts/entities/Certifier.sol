@@ -41,6 +41,10 @@ contract Certifier {
         certifier.cartesiEtherPortal = _cartesiEtherPortal;
     }
 
+    /**
+     * @notice Restrict function to Certifier Agent
+     * @dev This modifier restrict function to Certifier Agent
+     */
     modifier onlyAgent() {
         if (msg.sender != certifier.agent) {
             revert Unouthorized();
@@ -48,6 +52,10 @@ contract Certifier {
         _;
     }
 
+    /**
+     * @notice Restrict function to Lilium Agent
+     * @dev This modifier restrict function to Lilium Agent
+     */
     modifier onlyMasterAgent() {
         if (msg.sender != certifier.masterAgent) {
             revert Unouthorized();
@@ -55,16 +63,37 @@ contract Certifier {
         _;
     }
 
+    /**
+     * @notice Set Cartesi Certifier Contract Address
+     * @dev This function set cartesi certifier contract address after deploy, because it is not possible to set it before deploy since the cartesi machine is deployed later
+     * @param _cartesiCertifier address of cartesi certifier contract
+     */
     function setCartesi(address _cartesiCertifier) public onlyMasterAgent {
         certifier.cartesiCertifier = _cartesiCertifier;
         ICarbonCredit(ILilium(certifier.lilium).getToken(address(this)))
             .setCartesi(_cartesiCertifier);
     }
 
+    /**
+     * @notice Get Lilium URI
+     * @dev This function get lilium URI using IPFS library
+     * @return string URI
+     */
     function getURI() public view returns (string memory) {
         return IPFS.getURI(certifier.cid);
     }
 
+    /**
+     * @notice Create new company
+     * @dev This function create new company contract
+     * @param _cid IPFS CID
+     * @param _name company name
+     * @param _country company country
+     * @param _industry company industry
+     * @param _allowance company allowance
+     * @param _compensation company compensation
+     * @param _agent company agent address
+     */
     function newCompany(
         string memory _cid,
         string memory _name,

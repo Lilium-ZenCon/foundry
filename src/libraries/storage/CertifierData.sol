@@ -4,6 +4,10 @@ pragma solidity ^0.8.20;
 
 import {CompanyData} from "@libraries/storage/CompanyData.sol";
 
+/**
+ * @title CertifierData
+ * @dev CertifierData library to store Certifier data
+ */
 library CertifierData {
     struct Certifier {
         string cid;

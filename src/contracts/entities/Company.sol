@@ -65,10 +65,21 @@ contract Company is AccessControl {
         _grantRole(AGENT_ROLE, _agent);
     }
 
+    /**
+     * @notice Get Lilium URI
+     * @dev This function get lilium URI using IPFS library
+     * @return string URI
+     */
     function getURI() public view returns (string memory) {
         return IPFS.getURI(company.cid);
     }
 
+    /**
+     * @notice Set Cartesi Certifier Contract
+     * @dev This function set cartesi verifier and auction contract address after deploy, because it is not possible to set it before deploy since the cartesi machine is deployed later. In addition, it grant verifier and auction role to the contracts
+     * @param _cartesiAuction address of cartesi auction contract
+     * @param _cartesiVerifier address of cartesi verifier contract
+     */
     function setAuxiliarContracts(
         address _cartesiAuction,
         address _cartesiVerifier
@@ -79,23 +90,42 @@ contract Company is AccessControl {
         _grantRole(AUCTION_ROLE, _cartesiAuction);
     }
 
+    /**
+     * @notice Increase allowance to mint token
+     * @dev This function increase allowance to mint token. Only verifier cartesi machine can call this function
+     * @param _amount amount of token to increase allowance
+     */
     function increaseAllowance(
         uint256 _amount
     ) external onlyRole(VERIFIER_ROLE) {
         company.allowance += _amount;
     }
 
+    /**
+     * @notice Decrease allowance to mint token
+     * @dev This function decrease allowance to mint token. This function is private because only mint function can call this function
+     * @param _amount amount of token to decrease allowance
+     */
     function decreaseAllowance(uint256 _amount) private {
         company.allowance -= _amount;
     }
 
+    /**
+     * @notice Add hardware device
+     * @dev This function add hardware device address. Only agent can call this function
+     * @param _hardwareAddress address of hardware device
+     */
     function addHardwareDevice(
         address _hardwareAddress
     ) public onlyRole(AGENT_ROLE) {
-        _grantRole(DEFAULT_ADMIN_ROLE, _hardwareAddress);
         _grantRole(HARDWARE_ROLE, _hardwareAddress);
     }
 
+    /**
+     * @notice Verify real world state
+     * @dev This function verify real world state. Only hardware device can call this function
+     * @param _RealWorldData real world data. Which will be a json in bytes
+     */
     function verifyRealWorldState(
         bytes calldata _RealWorldData
     ) public onlyRole(HARDWARE_ROLE) {
@@ -105,6 +135,12 @@ contract Company is AccessControl {
         );
     }
 
+    /**
+     * @notice Execute verifier voucher
+     * @dev This function execute verifier voucher.
+     * @param _payload payload of verifier voucher
+     * @param _proof proof of verifier voucher
+     */
     function executeVerifierVoucher(
         bytes memory _payload,
         Proof calldata _proof
@@ -117,6 +153,11 @@ contract Company is AccessControl {
         emit VerifierVoucherExecuted(msg.sender, _payload, _proof);
     }
 
+    /**
+     * @notice Mint token
+     * @dev This function mint token (CarbonCredit) to an address verifying if the company has enough allowance and decrease allowance after mint token. Only agent can call this function
+     * @param _amount amount of token to mint
+     */
     function mint(uint256 _amount) public onlyRole(AGENT_ROLE) {
         if (company.allowance < _amount) {
             revert DontHaveSuficientAllowance(_amount);
@@ -127,10 +168,22 @@ contract Company is AccessControl {
         }
     }
 
+    /**
+     * @notice Auxiliar function to set auction duration
+     * @dev This function set auction duration. It's private because only newAuction function can call this function
+     * @param _duration duration of auction in hours
+     */
     function setAuctionDuration(uint256 _duration) private {
         company.auctionDuration = _duration * 1 hours;
     }
 
+    /**
+     * @notice Create new auction
+     * @dev This function create new auction. Only agent can call this function. In the process, the function gives permission for the ERC20Portal contract to transfer the wallet value from msg.sender to the cartesi dapp and then calls the ERC20Portal sending in addition to the value an _executelayerdata in bytes containing the duration of the auction and the _reservePricePerToken
+     * @param _amount amount of token to auction
+     * @param _duration duration of auction in hours
+     * @param _reservePricePerToken reserve price per token
+     */
     function newAuction(
         uint256 _amount,
         uint256 _duration,
@@ -151,25 +204,38 @@ contract Company is AccessControl {
         emit NewAuction(msg.sender, _amount, _duration, _reservePricePerToken);
     }
 
-    function newBid(uint8 _amountPercentage) public payable {
-        bytes memory _executeLayerData = abi.encodePacked(_amountPercentage);
+    /**
+     * @notice Create new bid
+     * @dev this function transfer an amount in ether to Auction Cartesi Machine calling EtherPortal contract sending in addition to the value an _executelayerdata in bytes containing the interestedQuantity of the amount offered
+     * @param _interestedQuantity interested quantity of the amount offered
+     */
+    function newBid(uint8 _interestedQuantity) public payable {
+        bytes memory _executeLayerData = abi.encodePacked(_interestedQuantity);
         IEtherPortal(company.cartesiEtherPortal).depositEther(
             company.cartesiAuction,
             _executeLayerData
         );
-        emit NewBid(msg.sender, msg.value, _amountPercentage);
+        emit NewBid(msg.sender, msg.value, _interestedQuantity);
     }
 
+    /**
+     * @notice Heartbeat to Auction Cartesi Machine
+     * @dev This function send a heartbeat to Auction Cartesi Machine. This function is called by ChainLink Automation every 1 hour
+     */
     function heartbeat() public {
-        bytes memory _heartbeatData = abi.encodePacked(
-            msg.sig
-        );
+        bytes memory _heartbeatData = abi.encodePacked(msg.sig);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiAuction,
             _heartbeatData
         );
     }
 
+    /**
+     * @notice Withdraw from Auction Cartesi Machine
+     * @dev This function executes the auction voucher to withdraw the respective values ​​according to the final state of the auction
+     * @param _payload payload of auction voucher
+     * @param _proof proof of auction voucher
+     */
     function withdraw(bytes calldata _payload, Proof calldata _proof) public {
         ICartesiDApp(company.cartesiAuction).executeVoucher(
             company.cartesiAuction,
