@@ -25,13 +25,11 @@ contract CarbonCredit is AccessControl, ERC20 {
         string memory _tokenSymbol,
         uint256 _decimals,
         address _certifier,
-        address _priceFeed,
-        address _cartesiInputBox
+        address _priceFeed
     ) ERC20(_tokenName, _tokenSymbol) {
         token.decimals = _decimals;
         token.admin = _certifier;
         token.parityRouter = _priceFeed;
-        token.cartesiInputBox = _cartesiInputBox;
         _grantRole(DEFAULT_ADMIN_ROLE, _certifier);
     }
 
@@ -100,11 +98,6 @@ contract CarbonCredit is AccessControl, ERC20 {
             revert InsufficientAmount(amount);
         } else {
             _transfer(_msgSender(), to, amount);
-            bytes memory _payload = abi.encodePacked(msg.sender, to, amount);
-            IInputBox(token.cartesiInputBox).addInput(
-                token.cartesiInputBox,
-                _payload
-            );
             return true;
         }
     }

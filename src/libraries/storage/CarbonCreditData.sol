@@ -13,6 +13,5 @@ library CarbonCreditData {
         address admin;
         address parityRouter;
         address cartesiCertifier;
-        address cartesiInputBox;
     }
 }
