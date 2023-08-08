@@ -3,7 +3,6 @@
 pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
-import {DeployLiliumHelper} from "./DeployLiliumHelper.sol";
 import {Lilium} from "@contracts/entities/Lilium.sol";
 
 contract DeployLilium is Script {
