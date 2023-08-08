@@ -1,13 +1,47 @@
-## docs
+# Project Documentation
 
-```$ make env```
+This repository contains essential documentation to guide you through the setup and usage of the project. Follow the steps below to get started:
 
-- Params on env file
+## 1. Setting Up Environment
 
-```$ source env```
+Before you begin, make sure you have the required environment variables properly configured. Create an environment by executing the following command:
 
-```$ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify vvvv --broadcast```
+```bash
+$ make env
+```
+Ensure you provide the necessary parameters in the generated environment file.
 
-```$ forge doc```
+To load the environment variables, use:
 
-```$ forge doc --serve --port 4000```
+```bash
+$ source env
+```
+## 2. Deployment
+
+To deploy the DeployLilium.s.sol script, use the following command, replacing placeholders with appropriate values:
+
+```bash
+$ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast
+```
+
+## 3. Generating Documentation
+
+Generate project documentation using:
+
+```bash
+$ forge doc
+```
+
+This command generates documentation based on the project's code and structure.
+
+## 4. Viewing Documentation Locally
+
+View the generated documentation locally by serving it on a local server at port 4000. Use:
+
+```bash
+$ forge doc --serve --port 4000
+```
+
+Access the documentation through your web browser by navigating to http://localhost:4000.
+
+Explore and understand the project using the provided documentation. If you encounter any issues or need assistance, please reach out for support.
