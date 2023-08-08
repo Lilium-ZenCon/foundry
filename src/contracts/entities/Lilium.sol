@@ -4,11 +4,9 @@ pragma solidity ^0.8.20;
 
 import {IPFS} from "@libraries/function/IPFS.sol";
 import {ICarbonCredit} from "@interfaces/ICarbonCredit.sol";
-import {LiliumData} from "@libraries/storage/LiliumData.sol";
 import {Certifier} from "@contracts/entities/Certifier.sol";
+import {LiliumData} from "@libraries/storage/LiliumData.sol";
 import {CarbonCredit} from "@contracts/token/ERC20/CarbonCredit.sol";
-
-
 
 contract Lilium {
     LiliumData.Lilium public lilium;
@@ -97,8 +95,7 @@ contract Lilium {
             tokenSymbol,
             decimals,
             address(certifier),
-            lilium.parityRouter,
-            lilium.cartesiInputBox
+            lilium.parityRouter
         );
         tokens[address(certifier)] = address(token);
         emit NewCertifier(address(certifier), address(token));

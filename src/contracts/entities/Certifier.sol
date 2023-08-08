@@ -4,10 +4,10 @@ pragma solidity ^0.8.20;
 
 import {ILilium} from "@interfaces/ILilium.sol";
 import {IPFS} from "@libraries/function/IPFS.sol";
+import {Company} from "@contracts/entities/Company.sol";
 import {ICarbonCredit} from "@interfaces/ICarbonCredit.sol";
 import {CompanyData} from "@libraries/storage/CompanyData.sol";
 import {IInputBox} from "@cartesi/contracts/inputs/IInputBox.sol";
-import {Company} from "@contracts/entities/Company.sol";
 import {CertifierData} from "@libraries/storage/CertifierData.sol";
 
 /**
@@ -17,8 +17,8 @@ import {CertifierData} from "@libraries/storage/CertifierData.sol";
 contract Certifier {
     CertifierData.Certifier public certifier;
 
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant AGENT_ROLE = keccak256("AGENT_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant MASTER_ROLE = keccak256("MASTER_ROLE");
 
     error Unouthorized();
