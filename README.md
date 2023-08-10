@@ -48,5 +48,9 @@ Explore and understand the project using the provided documentation. If you enco
 
 ## 5. Deployed contracts
 
-- The contract below is responsible for creating the registration entities and tokens for each entity:
-https://sepolia.etherscan.io/address/0x0c2f52a0d357881fbad687fc420ed3fe9fc793b3
+The contracts were deployed on the Sepholia testnet. 
+
+Lilium: 0x0c2f52a0d357881fbad687fc420ed3fe9fc793b3
+Certifier: 0xb2de0d319b2a74e9213097f601ef1731c876466e
+Token: 0x531f2fed910e86cf7a6bf395cd4df1fb5ca21a34
+Company: 0xaef42efebb4922d6aaf5b50dc507715829b2146a
