@@ -68,17 +68,6 @@ contract Certifier {
     }
 
     /**
-     * @notice Set Cartesi Certifier Contract Address
-     * @dev This function set cartesi certifier contract address after deploy, because it is not possible to set it before deploy since the cartesi machine is deployed later
-     * @param _cartesiCertifier address of cartesi certifier contract
-     */
-    function setCartesi(address _cartesiCertifier) public onlyMasterAgent {
-        certifier.cartesiCertifier = _cartesiCertifier;
-        ICarbonCredit(ILilium(certifier.lilium).getToken(address(this)))
-            .setCartesi(_cartesiCertifier);
-    }
-
-    /**
      * @notice Get Lilium URI
      * @dev This function get lilium URI using IPFS library
      * @return string URI
