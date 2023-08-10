@@ -107,10 +107,8 @@ contract Company is AccessControl {
      * @dev This function increase allowance to mint token. Only verifier cartesi machine can call this function
      * @param _amount amount of token to increase allowance
      */
-    function increaseAllowance(
-        uint256 _amount
-    ) external onlyRole(VERIFIER_ROLE) {
-        company.allowance += _amount;
+    function increaseAllowance() external onlyRole(VERIFIER_ROLE) {
+        company.allowance += company.compensation;
     }
 
     /**
