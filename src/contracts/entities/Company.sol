@@ -141,7 +141,7 @@ contract Company is AccessControl {
     function verifyRealWorldState(
         string memory _RealWorldData
     ) public onlyRole(HARDWARE_ROLE) {
-        bytes memory _input = abi.encodePacked(msg.sig, _RealWorldData);
+        bytes memory _input = abi.encodePackedPacked(msg.sig, _RealWorldData);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiVerifier,
             _input
@@ -158,7 +158,7 @@ contract Company is AccessControl {
         bytes calldata _signature,
         Proof calldata _proof
     ) public {
-        bytes memory _payload = abi.encode(msg.sig, _signature);
+        bytes memory _payload = abi.encodePacked(msg.sig, _signature);
         ICartesiDApp(company.cartesiVerifier).executeVoucher(
             company.cartesiVerifier,
             _payload,
@@ -205,7 +205,7 @@ contract Company is AccessControl {
     ) public onlyRole(AGENT_ROLE) {
         IERC20(company.token).approve(company.cartesiERC20Portal, _amount);
         setAuctionDuration(_duration);
-        bytes memory _execLayerData = abi.encode(
+        bytes memory _execLayerData = abi.encodePacked(
             company.auctionDuration,
             _reservePricePerToken
         );
@@ -223,8 +223,8 @@ contract Company is AccessControl {
      * @dev this function transfer an amount in ether to Auction Cartesi Machine calling EtherPortal contract sending in addition to the value an _executelayerdata in bytes containing the interestedQuantity of the amount offered
      * @param _interestedQuantity interested quantity of the amount offered
      */
-    function newBid(uint8 _interestedQuantity) public payable {
-        bytes memory _executeLayerData = abi.encode(_interestedQuantity);
+    function newBid(uint256 _interestedQuantity) public payable {
+        bytes memory _executeLayerData = abi.encodePacked(_interestedQuantity);
         IEtherPortal(company.cartesiEtherPortal).depositEther(
             company.cartesiAuction,
             _executeLayerData
@@ -237,7 +237,7 @@ contract Company is AccessControl {
      * @dev This function send a heartbeat to Auction Cartesi Machine. This function is called by ChainLink Automation every 1 hour
      */
     function heartbeat() public {
-        bytes memory _heartbeatData = abi.encode(msg.sig);
+        bytes memory _heartbeatData = abi.encodePacked(msg.sig);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiAuction,
             _heartbeatData
@@ -251,7 +251,7 @@ contract Company is AccessControl {
      * @param _proof proof of auction voucher
      */
     function withdraw(bytes calldata _signature, Proof calldata _proof) public {
-        bytes memory _payload = abi.encode(msg.sig, _signature);
+        bytes memory _payload = abi.encodePacked(msg.sig, _signature);
         ICartesiDApp(company.cartesiAuction).executeVoucher(
             company.cartesiAuction,
             _payload,
