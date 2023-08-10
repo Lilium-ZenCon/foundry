@@ -84,7 +84,7 @@ contract Company is AccessControl {
 
     /**
      * @notice Set Cartesi Certifier Contract
-     * @dev This function set cartesi verifier and auction contract address after deploy, because it is not possible to set it before deploy since the cartesi machine is deployed later. In addition, it grant verifier and auction role to the contracts
+     * @dev This function set cartesi verifier and auction contract address after deploy, because it is not possible to set it before deploy since the cartesi machine is deployed later. In addition, it grant verifier and auction role to the contracts and send cartesi machine address to cartesi dapp via relay
      * @param _cartesiAuction address of cartesi auction contract
      * @param _cartesiVerifier address of cartesi verifier contract
      */
