@@ -14,13 +14,13 @@ library CompanyData {
         string country;
         string industry;
         uint256 allowance;
-        uint256 compensation;
         uint256 auctionDuration;
         address cartesiAuction;
         address cartesiInputBox;
         address cartesiVerifier;
         address cartesiERC20Portal;
         address cartesiEtherPortal;
-        address parityRouter;
+        address cartesiCartesiDAppAddressRelay;
+        uint256 compensation;
     }
 }

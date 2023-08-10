@@ -12,6 +12,7 @@ import {ICartesiDApp} from "@cartesi/contracts/dapp/ICartesiDApp.sol";
 import {IEtherPortal} from "@cartesi/contracts/portals/IEtherPortal.sol";
 import {IERC20Portal} from "@cartesi/contracts/portals/IERC20Portal.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IDAppAddressRelay} from "@cartesi/contracts/relays/IDAppAddressRelay.sol";
 
 /**
  * @title Company
@@ -52,6 +53,7 @@ contract Company is AccessControl {
         address _cartesiInputBox,
         address _cartesiERC20Portal,
         address _cartesiEtherPortal,
+        address _cartesiCartesiDAppAddressRelay,
         uint256 _compensation,
         address _agent
     ) {
@@ -64,6 +66,8 @@ contract Company is AccessControl {
         company.cartesiInputBox = _cartesiInputBox;
         company.cartesiERC20Portal = _cartesiERC20Portal;
         company.cartesiEtherPortal = _cartesiEtherPortal;
+        company
+            .cartesiCartesiDAppAddressRelay = _cartesiCartesiDAppAddressRelay;
         company.compensation = _compensation;
         _grantRole(DEFAULT_ADMIN_ROLE, _agent);
         _grantRole(AGENT_ROLE, _agent);
@@ -92,6 +96,10 @@ contract Company is AccessControl {
         company.cartesiVerifier = _cartesiVerifier;
         _grantRole(VERIFIER_ROLE, _cartesiVerifier);
         _grantRole(AUCTION_ROLE, _cartesiAuction);
+        IDAppAddressRelay(company.cartesiCartesiDAppAddressRelay)
+            .relayDAppAddress(_cartesiVerifier);
+        IDAppAddressRelay(company.cartesiCartesiDAppAddressRelay)
+            .relayDAppAddress(_cartesiVerifier);
     }
 
     /**
@@ -131,9 +139,9 @@ contract Company is AccessControl {
      * @param _RealWorldData real world data. Which will be a json in bytes
      */
     function verifyRealWorldState(
-        bytes calldata _RealWorldData
+        string memory _RealWorldData
     ) public onlyRole(HARDWARE_ROLE) {
-        bytes memory _input = abi.encode(msg.sig, _RealWorldData);
+        bytes memory _input = abi.encodePacked(msg.sig, _RealWorldData);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiVerifier,
             _input
