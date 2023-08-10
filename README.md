@@ -45,3 +45,8 @@ $ forge doc --serve --port 4000
 Access the documentation through your web browser by navigating to http://localhost:4000.
 
 Explore and understand the project using the provided documentation. If you encounter any issues or need assistance, please reach out for support.
+
+## 5. Deployed contracts
+
+- The contract below is responsible for creating the registration entities and tokens for each entity:
+https://sepolia.etherscan.io/address/0x0c2f52a0d357881fbad687fc420ed3fe9fc793b3
