@@ -19,6 +19,7 @@ contract CarbonCredit is AccessControl, ERC20 {
     error InsufficientAmount(uint256 _amount);
 
     event Retire(address _sender, uint256 _amount);
+    event ApproveFrom(address _from, address _to, uint256 _amount);
 
     constructor(
         string memory _tokenName,
@@ -63,12 +64,37 @@ contract CarbonCredit is AccessControl, ERC20 {
         _mint(_to, _amount);
     }
 
-    function retire(uint256 _amount) external {
-        if (balanceOf(_msgSender()) < _amount) {
+    /**
+     * @notice Approve From
+     * @dev This function approve amount of token (CarbonCredit) from an address to another address
+     * @param _from address to approve token
+     * @param _to address to receive token
+     * @param _amount amount of token to approve
+     */
+    function approveFrom(
+        address _from,
+        address _to,
+        uint256 _amount
+    ) external {
+        if(balanceOf(_from) < _amount) {
             revert InsufficientAmount(_amount);
         } else {
-            _burn(_msgSender(), _amount);
-            emit Retire(_msgSender(), _amount);
+            _approve(_from, _to, _amount);
+            emit ApproveFrom(_from, _to, _amount);
+        }
+    }
+
+    /**
+     * @notice Retire/Burn Token
+     * @dev This function retire/burn token (CarbonCredit) from an address
+     * @param _amount amount of token to retire/burn
+     */
+    function retire(uint256 _amount) external {
+        if (balanceOf(msg.sender) < _amount) {
+            revert InsufficientAmount(_amount);
+        } else {
+            _burn(msg.sender, _amount);
+            emit Retire(msg.sender, _amount);
         }
     }
 
@@ -83,10 +109,10 @@ contract CarbonCredit is AccessControl, ERC20 {
         address to,
         uint256 amount
     ) public override returns (bool) {
-        if (balanceOf(_msgSender()) < amount) {
+        if (balanceOf(msg.sender) < amount) {
             revert InsufficientAmount(amount);
         } else {
-            _transfer(_msgSender(), to, amount);
+            _transfer(msg.sender, to, amount);
             return true;
         }
     }

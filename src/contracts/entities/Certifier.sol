@@ -57,17 +57,6 @@ contract Certifier {
     }
 
     /**
-     * @notice Restrict function to Lilium Agent
-     * @dev This modifier restrict function to Lilium Agent
-     */
-    modifier onlyMasterAgent() {
-        if (msg.sender != certifier.masterAgent) {
-            revert Unouthorized();
-        }
-        _;
-    }
-
-    /**
      * @notice Get Lilium URI
      * @dev This function get lilium URI using IPFS library
      * @return string URI
@@ -96,6 +85,7 @@ contract Certifier {
         uint256 _compensation,
         address _agent
     ) public onlyAgent {
+        certifier.token = ILilium(certifier.lilium).getToken(address(this));
         Company company = new Company(
             _cid,
             _name,

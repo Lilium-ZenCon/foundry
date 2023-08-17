@@ -185,7 +185,7 @@ contract Company is AccessControl {
      * @dev This function set auction duration. It's private because only newAuction function can call this function
      * @param _duration duration of auction in hours
      */
-    function setAuctionDuration(uint256 _duration) private {
+    function _setAuctionDuration(uint256 _duration) private {
         company.auctionDuration = _duration * 1 hours;
     }
 
@@ -201,8 +201,8 @@ contract Company is AccessControl {
         uint256 _duration,
         uint256 _reservePricePerToken
     ) public onlyRole(AGENT_ROLE) {
-        IERC20(company.token).approve(company.cartesiERC20Portal, _amount);
-        setAuctionDuration(_duration);
+        ICarbonCredit(company.token).approveFrom(msg.sender, company.cartesiERC20Portal, _amount);
+        _setAuctionDuration(_duration);
         bytes memory _execLayerData = abi.encodePacked(
             company.auctionDuration,
             _reservePricePerToken

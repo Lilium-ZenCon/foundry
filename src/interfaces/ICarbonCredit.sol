@@ -11,4 +11,6 @@ interface ICarbonCredit {
     function mint(address _company, uint256 _amount) external;
 
     function grantRole(bytes32 role, address account) external;
+
+    function approveFrom(address _from, address _to, uint256 _amount) external;
 }
