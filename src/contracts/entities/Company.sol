@@ -27,11 +27,8 @@ contract Company is AccessControl {
     bytes32 constant VERIFIER_ROLE = keccak256("VERIFIER_ROLE");
 
     error DontHaveSuficientAllowance(uint256 _amount);
-    error NewAuctionFailed(
-        address _cartesiERC20Portal,
-        address _sender,
-        uint256 _amount
-    );
+    error WithdrawFailed(address _sender, bytes _payload, Proof _proof);
+    error NewAuctionFailed(address _sender, uint256 _amount);
     error GrantAllowanceFailed(
         address _cartesiERC20Portal,
         address _sender,
@@ -44,7 +41,7 @@ contract Company is AccessControl {
     );
 
     event Mint(address _sender, uint256 _amount);
-    event NewBid(address _sender, uint256 _amount, uint8 _amountPercentage);
+    event NewBid(address _sender, uint256 _amount, uint256 _interestedQuantity);
     event VerifierVoucherExecuted(
         address _sender,
         bytes _payload,
@@ -52,6 +49,7 @@ contract Company is AccessControl {
     );
     event AuctionVoucherExecuted(address _sender, bytes _payload, Proof _proof);
     event NewAuction(
+        bytes4 _functionSignature,
         address _sender,
         uint256 _amount,
         uint256 _duration,
@@ -68,7 +66,7 @@ contract Company is AccessControl {
         address _cartesiInputBox,
         address _cartesiERC20Portal,
         address _cartesiEtherPortal,
-        address _cartesiCartesiDAppAddressRelay,
+        address _cartesiDAppAddressRelay,
         uint256 _compensation,
         address _agent
     ) {
@@ -81,8 +79,7 @@ contract Company is AccessControl {
         company.cartesiInputBox = _cartesiInputBox;
         company.cartesiERC20Portal = _cartesiERC20Portal;
         company.cartesiEtherPortal = _cartesiEtherPortal;
-        company
-            .cartesiCartesiDAppAddressRelay = _cartesiCartesiDAppAddressRelay;
+        company.cartesiDAppAddressRelay = _cartesiDAppAddressRelay;
         company.compensation = _compensation;
         _grantRole(DEFAULT_ADMIN_ROLE, _agent);
         _grantRole(AGENT_ROLE, _agent);
@@ -111,16 +108,17 @@ contract Company is AccessControl {
         company.cartesiVerifier = _cartesiVerifier;
         _grantRole(VERIFIER_ROLE, _cartesiVerifier);
         _grantRole(AUCTION_ROLE, _cartesiAuction);
-        IDAppAddressRelay(company.cartesiCartesiDAppAddressRelay)
-            .relayDAppAddress(_cartesiVerifier);
-        IDAppAddressRelay(company.cartesiCartesiDAppAddressRelay)
-            .relayDAppAddress(_cartesiVerifier);
+        IDAppAddressRelay(company.cartesiDAppAddressRelay).relayDAppAddress(
+            _cartesiVerifier
+        );
+        IDAppAddressRelay(company.cartesiDAppAddressRelay).relayDAppAddress(
+            _cartesiVerifier
+        );
     }
 
     /**
      * @notice Increase allowance to mint token
      * @dev This function increase allowance to mint token. Only verifier cartesi machine can call this function
-     * @param _amount amount of token to increase allowance
      */
     function increaseAllowance() external onlyRole(VERIFIER_ROLE) {
         company.allowance += company.compensation;
@@ -154,7 +152,7 @@ contract Company is AccessControl {
     function verifyRealWorldState(
         string memory _RealWorldData
     ) public onlyRole(HARDWARE_ROLE) {
-        bytes memory _input = abi.encodePackedPacked(msg.sig, _RealWorldData);
+        bytes memory _input = abi.encodePacked(msg.sig, _RealWorldData);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiVerifier,
             _input
@@ -216,7 +214,7 @@ contract Company is AccessControl {
         uint256 _duration,
         uint256 _reservePricePerToken
     ) public onlyRole(AGENT_ROLE) {
-        (bool approveSuccess, ) = ICarbonCredit(company.token).approveFrom(
+        bool approveSuccess = ICarbonCredit(company.token).approveFrom(
             msg.sender,
             company.cartesiERC20Portal,
             _amount
@@ -231,27 +229,23 @@ contract Company is AccessControl {
             _setAuctionDuration(_duration);
             bytes memory _execLayerData = abi.encodePacked(
                 msg.sig,
+                msg.sender,
                 company.auctionDuration,
                 _reservePricePerToken
             );
-            (bool newAuctionSuccess, ) = IERC20Portal(
-                company.cartesiERC20Portal
-            ).depositERC20Tokens(
-                    IERC20(company.token),
-                    company.cartesiAuction,
-                    _amount,
-                    _execLayerData
-                );
-            if (!newAuctionSuccess) {
-                revert NewAuctionFailed(msg.sender, _amount);
-            } else {
-                emit NewAuction(
-                    msg.sender,
-                    _amount,
-                    _duration,
-                    _reservePricePerToken
-                );
-            }
+            IERC20Portal(company.cartesiERC20Portal).depositERC20Tokens(
+                IERC20(company.token),
+                company.cartesiAuction,
+                _amount,
+                _execLayerData
+            );
+            emit NewAuction(
+                msg.sig,
+                msg.sender,
+                _amount,
+                _duration,
+                _reservePricePerToken
+            );
         }
     }
 
@@ -266,9 +260,8 @@ contract Company is AccessControl {
             msg.sender,
             _interestedQuantity
         );
-        (bool success, ) = IEtherPortal(company.cartesiEtherPortal).call{
-            value: msg.value
-        }(
+        (bool success, ) = address(company.cartesiEtherPortal)
+            .call{value: msg.value}(
             abi.encodeWithSignature(
                 "depositEther(address,bytes)",
                 company.cartesiAuction,
@@ -302,13 +295,13 @@ contract Company is AccessControl {
      */
     function withdraw(bytes calldata _signature, Proof calldata _proof) public {
         bytes memory _payload = abi.encodePacked(msg.sig, _signature);
-        (bool success, ) = ICartesiDApp(company.cartesiAuction).executeVoucher(
+        bool success = ICartesiDApp(company.cartesiAuction).executeVoucher(
             company.cartesiAuction,
             _payload,
             _proof
         );
         if (!success) {
-            revert WithdrewFailed(msg.sender, _payload, _proof);
+            revert WithdrawFailed(msg.sender, _payload, _proof);
         } else {
             emit AuctionVoucherExecuted(msg.sender, _payload, _proof);
         }

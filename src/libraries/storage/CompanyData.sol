@@ -20,7 +20,7 @@ library CompanyData {
         address cartesiVerifier;
         address cartesiERC20Portal;
         address cartesiEtherPortal;
-        address cartesiCartesiDAppAddressRelay;
+        address cartesiDAppAddressRelay;
         uint256 compensation;
     }
 }

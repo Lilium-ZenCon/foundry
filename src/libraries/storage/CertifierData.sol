@@ -14,10 +14,12 @@ library CertifierData {
         string name;
         address lilium;
         address agent;
+        address token;
         address masterAgent;
         address cartesiInputBox;
         address cartesiCertifier;
         address cartesiERC20Portal;
         address cartesiEtherPortal;
+        address cartesiDAppAddressRelay;
     }
 }

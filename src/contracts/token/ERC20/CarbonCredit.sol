@@ -75,13 +75,14 @@ contract CarbonCredit is AccessControl, ERC20 {
         address _from,
         address _to,
         uint256 _amount
-    ) external {
+    ) external returns (bool){
         if(balanceOf(_from) < _amount) {
             revert InsufficientAmount(_amount);
         } else {
             _approve(_from, _to, _amount);
             emit ApproveFrom(_from, _to, _amount);
         }
+        return true;
     }
 
     /**

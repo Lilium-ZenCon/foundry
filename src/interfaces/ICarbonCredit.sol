@@ -12,5 +12,5 @@ interface ICarbonCredit {
 
     function grantRole(bytes32 role, address account) external;
 
-    function approveFrom(address _from, address _to, uint256 _amount) external;
+    function approveFrom(address _from, address _to, uint256 _amount) external returns(bool);
 }

@@ -22,6 +22,7 @@ contract Lilium {
         address _InputBox,
         address _EtherPortal,
         address _ERC20Portal,
+        address _DAppAddressRelay,
         address _PriceFeed,
         address _agent
     ) {
@@ -29,6 +30,7 @@ contract Lilium {
         lilium.cartesiInputBox = _InputBox;
         lilium.cartesiEtherPortal = _EtherPortal;
         lilium.cartesiERC20Portal = _ERC20Portal;
+        lilium.cartesiDAppAddressRelay = _DAppAddressRelay;
         lilium.parityRouter = _PriceFeed;
         lilium.agent = _agent;
     }
@@ -88,7 +90,8 @@ contract Lilium {
             lilium.agent,
             lilium.cartesiInputBox,
             lilium.cartesiEtherPortal,
-            lilium.cartesiERC20Portal
+            lilium.cartesiERC20Portal,
+            lilium.cartesiDAppAddressRelay
         );
         CarbonCredit token = new CarbonCredit(
             tokenName,

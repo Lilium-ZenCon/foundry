@@ -33,7 +33,8 @@ contract Certifier {
         address _masterAgent,
         address _cartesiInputBox,
         address _cartesiEtherPortal,
-        address _cartesiERC20Portal
+        address _cartesiERC20Portal,
+        address _cartesiDAppAddressRelay
     ) {
         certifier.cid = _cid;
         certifier.name = _name;
@@ -43,6 +44,7 @@ contract Certifier {
         certifier.cartesiInputBox = _cartesiInputBox;
         certifier.cartesiERC20Portal = _cartesiERC20Portal;
         certifier.cartesiEtherPortal = _cartesiEtherPortal;
+        certifier.cartesiDAppAddressRelay = _cartesiDAppAddressRelay;
     }
 
     /**
@@ -96,6 +98,7 @@ contract Certifier {
             certifier.cartesiInputBox,
             certifier.cartesiERC20Portal,
             certifier.cartesiEtherPortal,
+            certifier.cartesiDAppAddressRelay,
             _compensation,
             _agent
         );
