@@ -27,6 +27,21 @@ contract Company is AccessControl {
     bytes32 constant VERIFIER_ROLE = keccak256("VERIFIER_ROLE");
 
     error DontHaveSuficientAllowance(uint256 _amount);
+    error NewAuctionFailed(
+        address _cartesiERC20Portal,
+        address _sender,
+        uint256 _amount
+    );
+    error GrantAllowanceFailed(
+        address _cartesiERC20Portal,
+        address _sender,
+        uint256 _amount
+    );
+    error BidFailed(
+        address _sender,
+        uint256 _amount,
+        uint256 _interestedQuantity
+    );
 
     event Mint(address _sender, uint256 _amount);
     event NewBid(address _sender, uint256 _amount, uint8 _amountPercentage);
@@ -201,19 +216,43 @@ contract Company is AccessControl {
         uint256 _duration,
         uint256 _reservePricePerToken
     ) public onlyRole(AGENT_ROLE) {
-        ICarbonCredit(company.token).approveFrom(msg.sender, company.cartesiERC20Portal, _amount);
-        _setAuctionDuration(_duration);
-        bytes memory _execLayerData = abi.encodePacked(
-            company.auctionDuration,
-            _reservePricePerToken
+        (bool approveSuccess, ) = ICarbonCredit(company.token).approveFrom(
+            msg.sender,
+            company.cartesiERC20Portal,
+            _amount
         );
-        IERC20Portal(company.cartesiERC20Portal).depositERC20Tokens(
-            IERC20(company.token),
-            company.cartesiAuction,
-            _amount,
-            _execLayerData
-        );
-        emit NewAuction(msg.sender, _amount, _duration, _reservePricePerToken);
+        if (!approveSuccess) {
+            revert GrantAllowanceFailed(
+                company.cartesiERC20Portal,
+                msg.sender,
+                _amount
+            );
+        } else {
+            _setAuctionDuration(_duration);
+            bytes memory _execLayerData = abi.encodePacked(
+                msg.sig,
+                company.auctionDuration,
+                _reservePricePerToken
+            );
+            (bool newAuctionSuccess, ) = IERC20Portal(
+                company.cartesiERC20Portal
+            ).depositERC20Tokens(
+                    IERC20(company.token),
+                    company.cartesiAuction,
+                    _amount,
+                    _execLayerData
+                );
+            if (!newAuctionSuccess) {
+                revert NewAuctionFailed(msg.sender, _amount);
+            } else {
+                emit NewAuction(
+                    msg.sender,
+                    _amount,
+                    _duration,
+                    _reservePricePerToken
+                );
+            }
+        }
     }
 
     /**
@@ -222,12 +261,25 @@ contract Company is AccessControl {
      * @param _interestedQuantity interested quantity of the amount offered
      */
     function newBid(uint256 _interestedQuantity) public payable {
-        bytes memory _executeLayerData = abi.encodePacked(_interestedQuantity);
-        IEtherPortal(company.cartesiEtherPortal).depositEther(
-            company.cartesiAuction,
-            _executeLayerData
+        bytes memory _executeLayerData = abi.encodePacked(
+            msg.sig,
+            msg.sender,
+            _interestedQuantity
         );
-        emit NewBid(msg.sender, msg.value, _interestedQuantity);
+        (bool success, ) = IEtherPortal(company.cartesiEtherPortal).call{
+            value: msg.value
+        }(
+            abi.encodeWithSignature(
+                "depositEther(address,bytes)",
+                company.cartesiAuction,
+                _executeLayerData
+            )
+        );
+        if (!success) {
+            revert BidFailed(msg.sender, msg.value, _interestedQuantity);
+        } else {
+            emit NewBid(msg.sender, msg.value, _interestedQuantity);
+        }
     }
 
     /**
@@ -245,16 +297,20 @@ contract Company is AccessControl {
     /**
      * @notice Withdraw from Auction Cartesi Machine
      * @dev This function executes the auction voucher to withdraw the respective values ​​according to the final state of the auction
-     * @param _signature signature of auction voucher
+     * @param _signature signature of auction voucher target function
      * @param _proof proof of auction voucher
      */
     function withdraw(bytes calldata _signature, Proof calldata _proof) public {
         bytes memory _payload = abi.encodePacked(msg.sig, _signature);
-        ICartesiDApp(company.cartesiAuction).executeVoucher(
+        (bool success, ) = ICartesiDApp(company.cartesiAuction).executeVoucher(
             company.cartesiAuction,
             _payload,
             _proof
         );
-        emit AuctionVoucherExecuted(msg.sender, _payload, _proof);
+        if (!success) {
+            revert WithdrewFailed(msg.sender, _payload, _proof);
+        } else {
+            emit AuctionVoucherExecuted(msg.sender, _payload, _proof);
+        }
     }
 }

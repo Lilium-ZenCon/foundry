@@ -19,6 +19,6 @@ library IPFS {
      * @dev Concate the IPFS gateway with the CID
      */
     function getURI(string memory _cid) internal pure returns (string memory) {
-        return string(abi.encodePacked(getway(), _cid));
+        return string.concat(getway(), _cid);
     }
 }
