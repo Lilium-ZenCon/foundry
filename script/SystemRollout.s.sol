@@ -5,7 +5,9 @@ pragma solidity ^0.8.20;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import {Lilium} from "@contracts/entities/Lilium.sol";
-import {SetupConfig} from "@utils/setup/SetupConfig.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.sol";
+import {SetupCompany} from "@utils/setup/SetupCompany.sol";
+import {SetupCertifier} from "@utils/setup/SetupCertifier.sol";
 
 struct System {
     address lilium;
@@ -14,11 +16,13 @@ struct System {
     address company;
 }
 
-contract DeploySystem is Script, SetupConfig {
+contract DeploySystem is Script, SetupCertifier, SetupLilium, SetupCompany {
     System public system;
 
     function run() external {
-        SetupConfig helperConfig = new SetupConfig();
+        SetupLilium setupLilium = new SetupLilium();
+        SetupCompany setupCompany = new SetupCompany();
+        SetupCertifier setupCertifier = new SetupCertifier();
 
         (
             string memory _liliumCid,
@@ -28,7 +32,7 @@ contract DeploySystem is Script, SetupConfig {
             address _DAppAddressRelay,
             address _PriceFeed,
             address _liliumAgent // set before deploy
-        ) = helperConfig.liliumArgs();
+        ) = setupLilium.liliumArgs();
 
         (
             string memory _certifierCid,
@@ -37,7 +41,7 @@ contract DeploySystem is Script, SetupConfig {
             string memory _certifierTokenName,
             string memory _certifierTokenSymbol,
             uint8 _tokenDecimals
-        ) = helperConfig.newCertifierArgs();
+        ) = setupCertifier.newCertifierArgs();
 
         (
             string memory _companyCid,
@@ -47,7 +51,7 @@ contract DeploySystem is Script, SetupConfig {
             uint256 _companyAllowance,
             uint256 _companyCompensation,
             address _companyAgent
-        ) = helperConfig.newCompanyArgs();
+        ) = setupCompany.newCompanyArgs();
 
         vm.startBroadcast();
         Lilium lilium = new Lilium(
@@ -79,6 +83,7 @@ contract DeploySystem is Script, SetupConfig {
                 liliumData,
                 (address, address)
             );
+            system.lilium = address(lilium);
             system.certifier = certifier;
             system.token = token;
 

@@ -4,11 +4,11 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {Lilium} from "@contracts/entities/Lilium.sol";
-import {SetupConfig} from "@utils/setup/SetupConfig.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.sol";
 
-contract DeployLilium is Script, SetupConfig {
+contract DeployLilium is Script, SetupLilium {
     function run() external {
-        SetupConfig helperConfig = new SetupConfig();
+        SetupLilium helperConfig = new SetupLilium();
 
         (
             string memory _cid,

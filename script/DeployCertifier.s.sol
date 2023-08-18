@@ -4,11 +4,13 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {Certifier} from "@contracts/entities/Certifier.sol";
-import {SetupConfig} from "@utils/setup/SetupConfig.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.sol";
+import {SetupCertifier} from "@utils/setup/SetupCertifier.sol";
 
-contract DeployCertifier is Script, SetupConfig {
+contract DeployCertifier is Script, SetupCertifier, SetupLilium {
     function run() external {
-        SetupConfig helperConfig = new SetupConfig();
+        SetupLilium setupLilium = new SetupLilium();
+        SetupCertifier setupCertifier = new SetupCertifier();
 
         (
             string memory _certifierCid,
@@ -17,7 +19,7 @@ contract DeployCertifier is Script, SetupConfig {
             ,
             ,
 
-        ) = helperConfig.newCertifierArgs();
+        ) = setupCertifier.newCertifierArgs();
 
         (
             ,
@@ -27,18 +29,18 @@ contract DeployCertifier is Script, SetupConfig {
             address _DAppAddressRelay,
             ,
 
-        ) = helperConfig.liliumArgs();
+        ) = setupLilium.liliumArgs();
 
         vm.startBroadcast();
         new Certifier(
             _certifierCid,
             _certifierName,
-            address(0), // Mocked contract
+            address(0), // Mocked lilium contract when deployed on Anvil
             msg.sender,
-            _InputBox,
-            _EtherPortal,
-            _ERC20Portal,
-            _DAppAddressRelay
+            _InputBox, // Mocked contract when deployed on Anvil
+            _EtherPortal, // Mocked contract when deployed on Anvil
+            _ERC20Portal, // Mocked contract when deployed on Anvil
+            _DAppAddressRelay // Mocked contract when deployed on Anvil
         );
         vm.stopBroadcast();
     }

@@ -3,13 +3,9 @@
 pragma solidity ^0.8.20;
 
 import {LiliumArgs} from "@utils/storage/NewLiliumArgs.sol";
-import {CompanyArgs} from "@utils/storage/NewCompanyArgs.sol";
-import {CertifierArgs} from "@utils/storage/NewCertifierArgs.sol";
 
-contract SetupConfig {
-    CompanyArgs public newCompanyArgs;
+contract SetupLilium {
     LiliumArgs public liliumArgs;
-    CertifierArgs public newCertifierArgs;
 
     mapping(uint256 => LiliumArgs) public chainIdToNetworkConfig;
 
@@ -18,8 +14,6 @@ contract SetupConfig {
         chainIdToNetworkConfig[31337] = getMumbaiLiliumArgs();
         chainIdToNetworkConfig[80001] = getMumbaiLiliumArgs();
         liliumArgs = chainIdToNetworkConfig[block.chainid];
-        getNewCertifierArgs();
-        getNewCompanyArgs();
     }
 
     function getSepoliaLiliumArgs()
@@ -66,37 +60,6 @@ contract SetupConfig {
             erc20Portal: address(0), // This is a mock
             dappAddressRelay: address(0), // This is a mock
             priceFeed: address(0), // This is a mock
-            agent: address(0) // set wallet before deploy
-        });
-    }
-
-    function getNewCertifierArgs()
-        internal
-        view
-        returns (CertifierArgs memory certifierArgs)
-    {
-        certifierArgs = CertifierArgs({
-            cid: "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C",
-            name: "Verra",
-            agent: address(0), // set wallet before deploy
-            tokenName: "VERRA",
-            tokenSymbol: "VRR",
-            tokenDecimals: 18
-        });
-    }
-
-    function getNewCompanyArgs()
-        internal
-        view
-        returns (CompanyArgs memory companyArgs)
-    {
-        companyArgs = CompanyArgs({
-            cid: "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k",
-            name: "Gerdau",
-            country: "Brazil",
-            industry: "Steelworks",
-            allowance: 1000000000000,
-            compensation: 10000,
             agent: address(0) // set wallet before deploy
         });
     }

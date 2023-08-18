@@ -4,11 +4,13 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {Company} from "@contracts/entities/Company.sol";
-import {SetupConfig} from "@utils/setup/SetupConfig.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.sol";
+import {SetupCompany} from "@utils/setup/SetupCompany.sol";
 
-contract DeployCompany is Script, SetupConfig {
+contract DeployCompany is Script, SetupLilium, SetupCompany {
     function run() external {
-        SetupConfig helperConfig = new SetupConfig();
+        SetupLilium setupLilium = new SetupLilium();
+        SetupCompany setupCompany = new SetupCompany();
 
         (
             string memory _companyCid,
@@ -17,8 +19,9 @@ contract DeployCompany is Script, SetupConfig {
             string memory _companyIndustry,
             uint256 _companyAllowance,
             uint256 _companyCompensation,
+            // address _companyAgent // set wallet before deploy
 
-        ) = helperConfig.newCompanyArgs();
+        ) = setupCompany.newCompanyArgs();
 
         (
             ,
@@ -28,7 +31,7 @@ contract DeployCompany is Script, SetupConfig {
             address _DAppAddressRelay,
             ,
 
-        ) = helperConfig.liliumArgs();
+        ) = setupLilium.liliumArgs();
 
         vm.startBroadcast();
         new Company(
