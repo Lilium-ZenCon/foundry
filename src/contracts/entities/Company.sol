@@ -276,10 +276,10 @@ contract Company is AccessControl {
     }
 
     /**
-     * @notice Heartbeat to Auction Cartesi Machine
-     * @dev This function send a heartbeat to Auction Cartesi Machine. This function is called by ChainLink Automation every 1 hour
+     * @notice finishAuction to Auction Cartesi Machine
+     * @dev This function send a heartbeat to Auction Cartesi Machine. This function need be called by the same person who called newAuction function
      */
-    function heartbeat() public {
+    function finishAuction() public {
         bytes memory _heartbeatData = abi.encodePacked(msg.sig);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiAuction,
