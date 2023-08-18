@@ -3,19 +3,19 @@
 pragma solidity ^0.8.20;
 
 import {ILilium} from "@interfaces/ILilium.sol";
-import {IPFS} from "@libraries/function/IPFS.sol";
+import {IPFS} from "@libraries/IPFS.sol";
 import {Company} from "@contracts/entities/Company.sol";
 import {ICarbonCredit} from "@interfaces/ICarbonCredit.sol";
-import {CompanyData} from "@libraries/storage/CompanyData.sol";
+import {CompanyData} from "@structs/CompanyData.sol";
 import {IInputBox} from "@cartesi/contracts/inputs/IInputBox.sol";
-import {CertifierData} from "@libraries/storage/CertifierData.sol";
+import {CertifierData} from "@structs/CertifierData.sol";
 
 /**
  * @title Certifier
  * @notice This contract is responsible for create new company contract
  */
 contract Certifier {
-    CertifierData.Certifier public certifier;
+    CertifierData public certifier;
 
     bytes32 public constant AGENT_ROLE = keccak256("AGENT_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -30,7 +30,6 @@ contract Certifier {
         string memory _name,
         address _lilium,
         address _agent,
-        address _masterAgent,
         address _cartesiInputBox,
         address _cartesiEtherPortal,
         address _cartesiERC20Portal,
@@ -40,7 +39,6 @@ contract Certifier {
         certifier.name = _name;
         certifier.lilium = _lilium;
         certifier.agent = _agent;
-        certifier.masterAgent = _masterAgent;
         certifier.cartesiInputBox = _cartesiInputBox;
         certifier.cartesiERC20Portal = _cartesiERC20Portal;
         certifier.cartesiEtherPortal = _cartesiEtherPortal;
@@ -86,8 +84,7 @@ contract Certifier {
         uint256 _allowance,
         uint256 _compensation,
         address _agent
-    ) public onlyAgent {
-        certifier.token = ILilium(certifier.lilium).getToken(address(this));
+    ) public onlyAgent returns (address) {
         Company company = new Company(
             _cid,
             _name,
@@ -105,5 +102,6 @@ contract Certifier {
         ICarbonCredit(ILilium(certifier.lilium).getToken(address(this)))
             .grantRole(MINTER_ROLE, address(company));
         emit NewCompany(address(company));
+        return (address(company));
     }
 }

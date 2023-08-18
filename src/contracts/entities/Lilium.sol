@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.20;
 
-import {IPFS} from "@libraries/function/IPFS.sol";
+import {IPFS} from "@libraries/IPFS.sol";
 import {ICarbonCredit} from "@interfaces/ICarbonCredit.sol";
 import {Certifier} from "@contracts/entities/Certifier.sol";
-import {LiliumData} from "@libraries/storage/LiliumData.sol";
+import {LiliumData} from "@structs/LiliumData.sol";
 import {CarbonCredit} from "@contracts/token/ERC20/CarbonCredit.sol";
 
 contract Lilium {
-    LiliumData.Lilium public lilium;
+    LiliumData public lilium;
 
     mapping(address => address) public tokens;
 
@@ -52,7 +52,8 @@ contract Lilium {
      * @return address of cartesi certifier contract
      */
     function getToken(address _certifier) external view returns (address) {
-        return tokens[_certifier];
+        address token = tokens[_certifier];
+        return token;
     }
 
     /**
@@ -80,14 +81,13 @@ contract Lilium {
         address _agent,
         string memory tokenName,
         string memory tokenSymbol,
-        uint256 decimals
-    ) public onlyAgent {
+        uint8 decimals
+    ) public onlyAgent returns (address, address) {
         Certifier certifier = new Certifier(
             _cid,
             _name,
-            address(this), //retirar
+            address(this),
             _agent,
-            lilium.agent,
             lilium.cartesiInputBox,
             lilium.cartesiEtherPortal,
             lilium.cartesiERC20Portal,
@@ -102,5 +102,6 @@ contract Lilium {
         );
         tokens[address(certifier)] = address(token);
         emit NewCertifier(address(certifier), address(token));
+        return (address(certifier), address(token));
     }
 }

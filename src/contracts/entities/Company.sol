@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.20;
 
-import {IPFS} from "@libraries/function/IPFS.sol";
+import {IPFS} from "@libraries/IPFS.sol";
 import {ICarbonCredit} from "@interfaces/ICarbonCredit.sol";
 import {Proof} from "@cartesi/contracts/dapp/ICartesiDApp.sol";
-import {CompanyData} from "@libraries/storage/CompanyData.sol";
+import {CompanyData} from "@structs/CompanyData.sol";
 import {IInputBox} from "@cartesi/contracts/inputs/IInputBox.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ICartesiDApp} from "@cartesi/contracts/dapp/ICartesiDApp.sol";
@@ -19,7 +19,7 @@ import {IDAppAddressRelay} from "@cartesi/contracts/relays/IDAppAddressRelay.sol
  * @notice This contract is a insterface to interact with verifier and auction cartesi machine, and other attributes of company
  */
 contract Company is AccessControl {
-    CompanyData.Company public company;
+    CompanyData public company;
 
     bytes32 constant AGENT_ROLE = keccak256("AGENT_ROLE");
     bytes32 constant AUCTION_ROLE = keccak256("AUCTION_ROLE");

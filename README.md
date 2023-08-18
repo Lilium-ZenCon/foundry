@@ -21,7 +21,11 @@ $ source env
 To deploy the DeployLilium.s.sol script, use the following command, replacing placeholders with appropriate values:
 
 ```bash
-$ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast
+$ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
+```
+
+```bash
+$ forge script script/DeploySystem.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
 ```
 
 ## 3. Generating Documentation

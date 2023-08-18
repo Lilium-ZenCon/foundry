@@ -3,7 +3,7 @@ pragma solidity 0.8.20;
 
 import {IInputBox} from "@cartesi/contracts/inputs/IInputBox.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {CarbonCreditData} from "@libraries/storage/CarbonCreditData.sol";
+import {CarbonCreditData} from "@structs/CarbonCreditData.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/interfaces/AggregatorV3Interface.sol";
 
@@ -12,7 +12,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/interfaces/AggregatorV
  * @dev This contract is a insterface to interact with certifier cartesi machine, and other attributes of carbon credit
  */
 contract CarbonCredit is AccessControl, ERC20 {
-    CarbonCreditData.CarbonCredit public token;
+    CarbonCreditData public token;
 
     bytes32 constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -24,7 +24,7 @@ contract CarbonCredit is AccessControl, ERC20 {
     constructor(
         string memory _tokenName,
         string memory _tokenSymbol,
-        uint256 _decimals,
+        uint8 _decimals,
         address _certifier,
         address _priceFeed
     ) ERC20(_tokenName, _tokenSymbol) {
