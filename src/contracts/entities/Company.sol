@@ -277,7 +277,7 @@ contract Company is AccessControl {
 
     /**
      * @notice finishAuction to Auction Cartesi Machine
-     * @dev This function send a heartbeat to Auction Cartesi Machine. This function need be called by the same person who called newAuction function
+     * @dev This function send a finish command to Auction Cartesi Machine. This function need be called by the same person who called newAuction function.
      */
     function finishAuction() public {
         bytes memory _heartbeatData = abi.encodePacked(msg.sig);
