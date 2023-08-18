@@ -37,7 +37,7 @@ contract Certifier {
     ) {
         certifier.cid = _cid;
         certifier.name = _name;
-        certifier.lilium = _lilium;
+        certifier.master = _lilium;
         certifier.agent = _agent;
         certifier.cartesiInputBox = _cartesiInputBox;
         certifier.cartesiERC20Portal = _cartesiERC20Portal;
@@ -88,7 +88,7 @@ contract Certifier {
         Company company = new Company(
             _cid,
             _name,
-            ILilium(certifier.lilium).getToken(address(this)),
+            ILilium(certifier.master).getToken(address(this)),
             _country,
             _industry,
             _allowance,
@@ -99,7 +99,7 @@ contract Certifier {
             _compensation,
             _agent
         );
-        ICarbonCredit(ILilium(certifier.lilium).getToken(address(this)))
+        ICarbonCredit(ILilium(certifier.master).getToken(address(this)))
             .grantRole(MINTER_ROLE, address(company));
         emit NewCompany(address(company));
         return (address(company));

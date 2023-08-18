@@ -9,7 +9,7 @@ pragma solidity ^0.8.20;
 struct CertifierData {
     string cid;
     string name;
-    address lilium;
+    address master;
     address agent;
     address token;
     address cartesiInputBox;
