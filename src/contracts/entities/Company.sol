@@ -214,12 +214,12 @@ contract Company is AccessControl {
         uint256 _duration,
         uint256 _reservePricePerToken
     ) public onlyRole(AGENT_ROLE) {
-        bool approveSuccess = ICarbonCredit(company.token).approveFrom(
+        bool approve = ICarbonCredit(company.token).approveFrom(
             msg.sender,
             company.cartesiERC20Portal,
             _amount
         );
-        if (!approveSuccess) {
+        if (!approve) {
             revert GrantAllowanceFailed(
                 company.cartesiERC20Portal,
                 msg.sender,
