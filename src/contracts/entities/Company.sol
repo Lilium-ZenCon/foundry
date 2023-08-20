@@ -160,25 +160,6 @@ contract Company is AccessControl {
     }
 
     /**
-     * @notice Execute verifier voucher
-     * @dev This function execute verifier voucher.
-     * @param _signature signature of verifier voucher
-     * @param _proof proof of verifier voucher
-     */
-    function executeVerifierVoucher(
-        bytes calldata _signature,
-        Proof calldata _proof
-    ) public {
-        bytes memory _payload = abi.encodePacked(msg.sig, _signature);
-        ICartesiDApp(company.cartesiVerifier).executeVoucher(
-            company.cartesiVerifier,
-            _payload,
-            _proof
-        );
-        emit VerifierVoucherExecuted(msg.sender, _payload, _proof);
-    }
-
-    /**
      * @notice Mint token
      * @dev This function mint token (CarbonCredit) to an address verifying if the company has enough allowance and decrease allowance after mint token. Only agent can call this function
      * @param _amount amount of token to mint
@@ -198,7 +179,7 @@ contract Company is AccessControl {
      * @dev This function set auction duration. It's private because only newAuction function can call this function
      * @param _duration duration of auction in hours
      */
-    function _setAuctionDuration(uint256 _duration) private {
+    function _setAuctionDuration(uint256 _duration) internal {
         company.auctionDuration = _duration * 1 hours;
     }
 
@@ -260,8 +241,9 @@ contract Company is AccessControl {
             msg.sender,
             _interestedQuantity
         );
-        (bool success, ) = address(company.cartesiEtherPortal)
-            .call{value: msg.value}(
+        (bool success, ) = address(company.cartesiEtherPortal).call{
+            value: msg.value
+        }(
             abi.encodeWithSignature(
                 "depositEther(address,bytes)",
                 company.cartesiAuction,
@@ -285,25 +267,5 @@ contract Company is AccessControl {
             company.cartesiAuction,
             _heartbeatData
         );
-    }
-
-    /**
-     * @notice Withdraw from Auction Cartesi Machine
-     * @dev This function executes the auction voucher to withdraw the respective values ​​according to the final state of the auction
-     * @param _signature signature of auction voucher target function
-     * @param _proof proof of auction voucher
-     */
-    function withdraw(bytes calldata _signature, Proof calldata _proof) public {
-        bytes memory _payload = abi.encodePacked(msg.sig, _signature);
-        bool success = ICartesiDApp(company.cartesiAuction).executeVoucher(
-            company.cartesiAuction,
-            _payload,
-            _proof
-        );
-        if (!success) {
-            revert WithdrawFailed(msg.sender, _payload, _proof);
-        } else {
-            emit AuctionVoucherExecuted(msg.sender, _payload, _proof);
-        }
     }
 }
