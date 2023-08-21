@@ -4,7 +4,7 @@ This repository contains essential documentation to guide you through the setup 
 
 ## 1. Setting Up Environment
 
-Before you begin, make sure you have the required environment variables properly configured. Create an environment by executing the following command:
+- Before you begin, make sure you have the required environment variables properly configured. Create an environment by executing the following command:
 
     ```bash
     $ make env
@@ -12,7 +12,7 @@ Before you begin, make sure you have the required environment variables properly
 
 Ensure you provide the necessary parameters in the generated environment file.
 
-To load the environment variables, use:
+- To load the environment variables, use:
 
     ```bash
     $ source env
@@ -30,7 +30,7 @@ To load the environment variables, use:
 
 ### 2.1 Deploy contracts on localhost
 
-To deploy the DeployLilium.s.sol script on localhost, use the following command, replacing placeholders with appropriate values:
+- To deploy the DeployLilium.s.sol script on localhost, use the following command, replacing placeholders with appropriate values:
 
     ```bash
     $ forge script script/DeployLilium.s.sol --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST --broadcast -vvvvv
@@ -38,7 +38,7 @@ To deploy the DeployLilium.s.sol script on localhost, use the following command,
 
 ### 2.2 Deploy contracts on testnet
 
-To deploy the DeployLilium.s.sol script on testnet, use the following command, replacing placeholders with appropriate values:
+- To deploy the DeployLilium.s.sol script on testnet, use the following command, replacing placeholders with appropriate values:
 
     ```bash
     $ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY_LILIUM --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
@@ -50,23 +50,23 @@ To deploy the DeployLilium.s.sol script on testnet, use the following command, r
 
 ### 3.1 Interacting with locally deployed application
 
-    - After the deploy on localhost (hardhat), we can create a certifier calling the function "newCertifier" from Lilium contract address:
+- After the deploy on localhost (hardhat), we can create a certifier calling the function "newCertifier" from Lilium contract address:
 
-        ```bash
-        $ cast send <LILIUM_CONTRACT_ADDRESS> "newCertifier(string memory _cid, string memory _name, address _agent, string memory tokenName, string memory tokenSymbol, uint8 decimals)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 "VERRA" "VRR" 18 --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST
-        ```
+    ```bash
+    $ cast send <LILIUM_CONTRACT_ADDRESS> "newCertifier(string memory _cid, string memory _name, address _agent, string memory tokenName, string memory tokenSymbol, uint8 decimals)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 "VERRA" "VRR" 18 --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST
+    ```
 
-    - Now, as Certifier Agent, we can create a company with the cast command below:
+- Now, as Certifier Agent, we can create a company with the cast command below:
 
-        ```bash
-        $ cast send 0xce85503de9399d4deca3c0b2bb3e9e7cfcbf9c6b "newCompany(string memory _cid, string memory _name, string memory _country, string memory _industry, uint256 _allowance, uint256 _compensation, address _agent)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_CERTIFIER_LOCALHOST
-        ```
+    ```bash
+    $ cast send 0xce85503de9399d4deca3c0b2bb3e9e7cfcbf9c6b "newCompany(string memory _cid, string memory _name, string memory _country, string memory _industry, uint256 _allowance, uint256 _compensation, address _agent)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_CERTIFIER_LOCALHOST
+    ```
 
-    - Before all of this, we, as company agent, have the interface with Cartesi Rollups ready to be called by Auction ans Verifier flows, but before of this we need deploy the cartesi machines verifier and auction, and then after this call the function ```setAuxiliarContracts``` to inform to the deployed DApp what addresses should he call.
+- Before all of this, we, as company agent, have the interface with Cartesi Rollups ready to be called by Auction ans Verifier flows, but before of this we need deploy the cartesi machines verifier and auction, and then after this call the function ```setAuxiliarContracts``` to inform to the deployed DApp what addresses should he call.
 
-        ```bash
-        $ 
-        ```
+    ```bash
+    $ 
+    ```
 
 ### 3.2 Interacting with testnet deployed application
 @TODO
