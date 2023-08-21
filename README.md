@@ -23,7 +23,7 @@ This repository contains essential documentation to guide you through the setup 
 - As we are using the Foundry framework to develop robustness contracts, an important change must be made in the rollup submodule:
 
     ```bash
-    $ cd lib/rollups/onchain/rollups/contracts/library/LibOutputValidation.sol
+    $ cat lib/rollups/onchain/rollups/contracts/library/LibOutputValidation.sol
     ```
 
     - Change line 16 to ```import {MerkleV2} from "../../../rollups-arbitration/lib/solidity-util/contracts/MerkleV2.sol";``` instead ```import {MerkleV2} from "@cartesi/util/contracts/MerkleV2.sol";```.
