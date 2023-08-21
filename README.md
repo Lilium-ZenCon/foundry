@@ -10,13 +10,13 @@ This repository contains essential documentation to guide you through the setup 
     $ make env
     ```
 
-Ensure you provide the necessary parameters in the generated environment file.
+- Ensure you provide the necessary parameters in the generated environment file.
 
-- To load the environment variables, use:
+    - To load the environment variables, use:
 
-    ```bash
-    $ source env
-    ```
+        ```bash
+        $ source env
+        ```
 
 ## 2. Deployment
 
