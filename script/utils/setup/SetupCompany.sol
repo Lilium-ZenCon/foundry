@@ -13,7 +13,7 @@ contract SetupCompany {
 
     function getNewCompanyArgs()
         internal
-        view
+        pure
         returns (CompanyArgs memory companyArgs)
     {
         companyArgs = CompanyArgs({
@@ -23,7 +23,7 @@ contract SetupCompany {
             industry: "Steelworks",
             allowance: 1000000000000,
             compensation: 10000,
-            agent: address(0) // set wallet before deploy
+            agent: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC // set wallet before deploy
         });
     }
 }

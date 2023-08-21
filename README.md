@@ -6,34 +6,77 @@ This repository contains essential documentation to guide you through the setup 
 
 Before you begin, make sure you have the required environment variables properly configured. Create an environment by executing the following command:
 
-```bash
-$ make env
-```
+    ```bash
+    $ make env
+    ```
+
 Ensure you provide the necessary parameters in the generated environment file.
 
 To load the environment variables, use:
 
-```bash
-$ source env
-```
+    ```bash
+    $ source env
+    ```
+
 ## 2. Deployment
 
-To deploy the DeployLilium.s.sol script, use the following command, replacing placeholders with appropriate values:
+- As we are using the Foundry framework to develop robustness contracts, an important change must be made in the rollup submodule:
 
-```bash
-$ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
-```
+    ```bash
+    $ cd lib/rollups/onchain/rollups/contracts/library/LibOutputValidation.sol
+    ```
 
-```bash
-$ forge script script/DeploySystem.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
-```
+    - Change line 16 to ```import {MerkleV2} from "../../../rollups-arbitration/lib/solidity-util/contracts/MerkleV2.sol";``` instead ```import {MerkleV2} from "@cartesi/util/contracts/MerkleV2.sol";```.
+
+### 2.1 Deploy contracts on localhost
+
+To deploy the DeployLilium.s.sol script on localhost, use the following command, replacing placeholders with appropriate values:
+
+    ```bash
+    $ forge script script/DeployLilium.s.sol --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST --broadcast -vvvvv
+    ```
+
+### 2.2 Deploy contracts on testnet
+
+To deploy the DeployLilium.s.sol script on testnet, use the following command, replacing placeholders with appropriate values:
+
+    ```bash
+    $ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY_LILIUM --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
+    ```
+
+## 3. Interacting with Application:
+
+- We have two ways to interact with the Lilium DApp depending on where it has been deployed.
+
+### 3.1 Interacting with locally deployed application
+
+    - After the deploy on localhost (hardhat), we can create a certifier calling the function "newCertifier" from Lilium contract address:
+
+        ```bash
+        $ cast send <LILIUM_CONTRACT_ADDRESS> "newCertifier(string memory _cid, string memory _name, address _agent, string memory tokenName, string memory tokenSymbol, uint8 decimals)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 "VERRA" "VRR" 18 --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST
+        ```
+
+    - Now, as Certifier Agent, we can create a company with the cast command below:
+
+        ```bash
+        $ cast send 0xce85503de9399d4deca3c0b2bb3e9e7cfcbf9c6b "newCompany(string memory _cid, string memory _name, string memory _country, string memory _industry, uint256 _allowance, uint256 _compensation, address _agent)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_CERTIFIER_LOCALHOST
+        ```
+
+    - Before all of this, we, as company agent, have the interface with Cartesi Rollups ready to be called by Auction ans Verifier flows, but before of this we need deploy the cartesi machines verifier and auction, and then after this call the function ```setAuxiliarContracts``` to inform to the deployed DApp what addresses should he call.
+
+        ```bash
+        $ 
+        ```
+
+### 3.2 Interacting with testnet deployed application
+@TODO
 
 ## 3. Generating Documentation
 
 Generate project documentation using:
 
 ```bash
-$ forge doc
+forge doc
 ```
 
 This command generates documentation based on the project's code and structure.
@@ -43,18 +86,9 @@ This command generates documentation based on the project's code and structure.
 View the generated documentation locally by serving it on a local server at port 4000. Use:
 
 ```bash
-$ forge doc --serve --port 4000
+forge doc --serve --port 4000
 ```
 
-Access the documentation through your web browser by navigating to http://localhost:4000.
+Access the documentation through your web browser by navigating to <http://localhost:4000>.
 
 Explore and understand the project using the provided documentation. If you encounter any issues or need assistance, please reach out for support.
-
-## 5. Deployed contracts
-
-The contracts were deployed on the Sepholia testnet. 
-
-- Lilium: 0x0c2f52a0d357881fbad687fc420ed3fe9fc793b3
-- Certifier: 0xb2de0d319b2a74e9213097f601ef1731c876466e
-- Token: 0x531f2fed910e86cf7a6bf395cd4df1fb5ca21a34
-- Company: 0xaef42efebb4922d6aaf5b50dc507715829b2146a

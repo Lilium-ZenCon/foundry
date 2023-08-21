@@ -109,10 +109,7 @@ contract Company is AccessControl {
         _grantRole(VERIFIER_ROLE, _cartesiVerifier);
         _grantRole(AUCTION_ROLE, _cartesiAuction);
         IDAppAddressRelay(company.cartesiDAppAddressRelay).relayDAppAddress(
-            _cartesiVerifier
-        );
-        IDAppAddressRelay(company.cartesiDAppAddressRelay).relayDAppAddress(
-            _cartesiVerifier
+            _cartesiAuction
         );
     }
 

@@ -13,14 +13,14 @@ contract SetupCarbonCredit {
 
     function getNewCarbonCreditArgs()
         internal
-        view
+        pure
         returns (CarbonCreditArgs memory carbonCreditArgs)
     {
         carbonCreditArgs = CarbonCreditArgs({
             tokenName: "VERRA",
             tokenSymbol: "VRR",
-            decimals: 2, // Mocked value
-            certifier: address(0), // Mocked address
+            decimals: 2,
+            certifier: address(0), // change to certifier address
             priceFeed: address(0) // Mocked address
         });
     }
