@@ -53,13 +53,13 @@ Ensure you provide the necessary parameters in the generated environment file.
 - After the deploy on localhost (hardhat), we can create a certifier calling the function "newCertifier" from Lilium contract address:
 
     ```bash
-    $ cast send <LILIUM_CONTRACT_ADDRESS> "newCertifier(string memory _cid, string memory _name, address _agent, string memory tokenName, string memory tokenSymbol, uint8 decimals)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 "VERRA" "VRR" 18 --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST
+    $ cast send <LILIUM_CONTRACT_ADDRESS> "newCertifier(string, string, address, string, string, uint8)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 "VERRA" "VRR" 18 --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST
     ```
 
 - Now, as Certifier Agent, we can create a company with the cast command below:
 
     ```bash
-    $ cast send 0xce85503de9399d4deca3c0b2bb3e9e7cfcbf9c6b "newCompany(string memory _cid, string memory _name, string memory _country, string memory _industry, uint256 _allowance, uint256 _compensation, address _agent)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_CERTIFIER_LOCALHOST
+    $ cast send <CERTIFIER_CONTRACT_ADDRESS> "newCompany(string, string, string, string, uint256, uint256, address)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_CERTIFIER_LOCALHOST
     ```
 
 - Before all of this, we, as company agent, have the interface with Cartesi Rollups ready to be called by Auction ans Verifier flows, but before of this we need deploy the cartesi machines verifier and auction, and then after this call the function ```setAuxiliarContracts``` to inform to the deployed DApp what addresses should he call.

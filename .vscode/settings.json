@@ -1,6 +1,7 @@
 {
     "conventionalCommits.scopes": [
         "contracts",
-        "deploy"
+        "deploy",
+        "docs"
     ]
 }
