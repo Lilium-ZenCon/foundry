@@ -5,10 +5,16 @@ pragma solidity ^0.8.20;
 import {Script} from "forge-std/Script.sol";
 import {Lilium} from "@contracts/entities/Lilium.sol";
 import {SetupLilium} from "@utils/setup/SetupLilium.sol";
+import {SetupDeployerAccount} from "@utils/setup/SetupDeployerAccount.sol";
 
 contract DeployLilium is Script, SetupLilium {
     function run() external {
         SetupLilium helperConfig = new SetupLilium();
+        SetupDeployerAccount helperDeployer = new SetupDeployerAccount();
+
+        (
+            _deployer
+        ) = helperDeployer.deployerAccountByChainId();
 
         (
             string memory _cid,
@@ -20,7 +26,7 @@ contract DeployLilium is Script, SetupLilium {
             address _agent
         ) = helperConfig.liliumArgs();
 
-        vm.startBroadcast();
+        vm.startBroadcast(_deployer);
         new Lilium(
             _cid,
             _InputBox,

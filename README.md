@@ -41,7 +41,7 @@ This repository contains essential documentation to guide you through the setup 
 - To deploy the DeployLilium.s.sol script on testnet, use the following command, replacing placeholders with appropriate values:
 
     ```bash
-    $ forge script script/DeployLilium.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY_LILIUM --etherscan-api-key $ETHERSCAN_API_KEY --verify --broadcast -vvvvv
+    $ forge script script/DeployLilium.s.sol --rpc-url $MUMBAI_RPC_URL --etherscan-api-key $POLYGONSCAN_API_KEY --verify --broadcast -vvvvv
     ```
 
 ## 3. Interacting with Application:
