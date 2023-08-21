@@ -65,8 +65,16 @@ Ensure you provide the necessary parameters in the generated environment file.
 - Before all of this, we, as company agent, have the interface with Cartesi Rollups ready to be called by Auction ans Verifier flows, but before of this we need deploy the cartesi machines verifier and auction, and then after this call the function ```setAuxiliarContracts``` to inform to the deployed DApp what addresses should he call.
 
     ```bash
-    $ 
+    $ cast send <COMPANY_CONTRACT_ADDRESS> "setAuxiliarContracts(address, address)" <AUCTION-CARTESI-MACHINE-CONTRACT-ADDRESS> <VERIFIER-CARTESI-MACHINE-CONTRACT-ADDRESS> --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_COMPANY_LOCALHOST
     ```
+
+- Now, as the company's agent, we need to add a hardware address to the company by providing the HARDWARE_ROLE to your address. This hardware will check the real world state:
+
+    ```bash
+    $ cast send <COMPANY_CONTRACT_ADDRESS> "addHardwareDevice(address)" <HARDWARE-ADDRESS> --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_COMPANY_LOCALHOST
+    ```
+
+- 
 
 ### 3.2 Interacting with testnet deployed application
 @TODO
