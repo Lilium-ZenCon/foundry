@@ -11,9 +11,10 @@ contract SetupDeployerAccount is Script{
     mapping(uint256 => DeployerAccount) public deployerAccountByChainId;
 
     constructor() {
-        deployerAccountByChainId[11155111] = getSepoliaDeployerAccount();
         deployerAccountByChainId[80001] = getMumbaiDeployerAccount();
-        deployerAccountByChainId[31337] = getLocalhostDeployerAccount();
+        deployerAccountByChainId[31337] = getHardhatDeployerAccount();
+        deployerAccountByChainId[11155111] = getSepoliaDeployerAccount();
+        deployerAccountByChainId[383414847825] = getZeniqDeployerAccount();
         deployerAccount = deployerAccountByChainId[block.chainid];
     }
 
@@ -33,9 +34,15 @@ contract SetupDeployerAccount is Script{
         });
     }
 
-    function getLocalhostDeployerAccount() internal view returns(DeployerAccount memory localhostDeployerAccount) {
-        localhostDeployerAccount = DeployerAccount({
-            deployer: vm.envUint("PRIVATE_KEY_LILIUM_LOCALHOST")
+    function getZeniqDeployerAccount() internal view returns(DeployerAccount memory zeniqDeployerAccount) {
+        zeniqDeployerAccount = DeployerAccount({
+            deployer: vm.envUint("PRIVATE_KEY_LILIUM")
+        });
+    }
+
+    function getHardhatDeployerAccount() internal view returns(DeployerAccount memory hardhatDeployerAccount) {
+        hardhatDeployerAccount = DeployerAccount({
+            deployer: vm.envUint("PRIVATE_KEY_LILIUM_HARDHAT")
         });
     }
 }

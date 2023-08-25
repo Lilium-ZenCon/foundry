@@ -29,7 +29,7 @@ contract DeployCompany is Script, SetupLilium, SetupCompany {
             address _EtherPortal,
             address _ERC20Portal,
             address _DAppAddressRelay,
-            ,
+            address _PriceFeed,
 
         ) = setupLilium.liliumArgs();
 
@@ -37,7 +37,7 @@ contract DeployCompany is Script, SetupLilium, SetupCompany {
         new Company(
             _companyCid,
             _companyName,
-            address(0), // Mocked token
+            _PriceFeed,
             _companyCountry,
             _companyIndustry,
             _companyAllowance,

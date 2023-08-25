@@ -8,13 +8,11 @@ import {SetupLilium} from "@utils/setup/SetupLilium.sol";
 import {SetupDeployerAccount} from "@utils/setup/SetupDeployerAccount.sol";
 
 contract DeployLilium is Script, SetupLilium {
-    function run() external {
-        SetupLilium helperConfig = new SetupLilium();
-        SetupDeployerAccount helperDeployer = new SetupDeployerAccount();
+    function run() external returns (address) {
+        SetupLilium setupLilium = new SetupLilium();
+        SetupDeployerAccount helperProvider = new SetupDeployerAccount();
 
-        (
-            _deployer
-        ) = helperDeployer.deployerAccountByChainId();
+        uint256 _deployer = helperProvider.deployerAccountByChainId();
 
         (
             string memory _cid,
@@ -24,10 +22,10 @@ contract DeployLilium is Script, SetupLilium {
             address _DAppAddressRelay,
             address _PriceFeed,
             address _agent
-        ) = helperConfig.liliumArgs();
+        ) = setupLilium.liliumArgs();
 
         vm.startBroadcast(_deployer);
-        new Lilium(
+        Lilium lilium = new Lilium(
             _cid,
             _InputBox,
             _EtherPortal,
@@ -37,5 +35,6 @@ contract DeployLilium is Script, SetupLilium {
             _agent
         );
         vm.stopBroadcast();
+        return address(lilium);
     }
 }

@@ -1,8 +1,10 @@
+@script/=script/
+@mocks=tests/mocks/
+@utils/=script/utils
+@structs/=src/structs/
 @libraries/=src/libraries/
 @interfaces/=src/interfaces/
-@structs/=src/structs/
 @contracts/=src/contracts/
-@utils/=script/utils
 @chainlink/contracts/=lib/chainlink/contracts/src/v0.8/
 @cartesi/contracts/=lib/rollups/onchain/rollups/contracts/
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ 

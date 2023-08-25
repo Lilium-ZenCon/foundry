@@ -259,10 +259,10 @@ contract Company is AccessControl {
      * @dev This function send a finish command to Auction Cartesi Machine. This function need be called by the same person who called newAuction function.
      */
     function finishAuction() public {
-        bytes memory _heartbeatData = abi.encodePacked(msg.sig);
+        bytes memory _executeLayerData = abi.encodePacked(msg.sig);
         IInputBox(company.cartesiInputBox).addInput(
             company.cartesiAuction,
-            _heartbeatData
+            _executeLayerData
         );
     }
 }
