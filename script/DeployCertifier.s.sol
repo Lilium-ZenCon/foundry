@@ -3,9 +3,8 @@
 pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
-import {DeployLilium} from "@script/DeployLilium.s.sol";
-import {SetupLilium} from "@utils/setup/SetupLilium.sol";
 import {Certifier} from "@contracts/entities/Certifier.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.sol";
 import {SetupCertifier} from "@utils/setup/SetupCertifier.sol";
 
 contract DeployCertifier is Script, SetupCertifier, SetupLilium {
@@ -28,16 +27,15 @@ contract DeployCertifier is Script, SetupCertifier, SetupLilium {
             address _EtherPortal,
             address _ERC20Portal,
             address _DAppAddressRelay,
-            address _PriceFeed,
+            ,
 
         ) = setupLilium.liliumArgs();
 
         vm.startBroadcast();
-        address _lilium = DeployLilium.run();
         new Certifier(
             _certifierCid,
             _certifierName,
-            _lilium, // Mocked lilium contract when deployed on Anvil
+            address(0), // Mocked lilium contract when deployed on Anvil
             msg.sender,
             _InputBox, // Mocked contract when deployed on Anvil
             _EtherPortal, // Mocked contract when deployed on Anvil

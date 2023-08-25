@@ -2,6 +2,6 @@
 
 pragma solidity ^0.8.20;
 
-struct DeployerAccount {
+struct DeployerAccountArgs {
     uint256 deployer;
 }

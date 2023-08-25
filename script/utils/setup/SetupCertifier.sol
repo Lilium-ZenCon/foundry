@@ -13,13 +13,13 @@ contract SetupCertifier {
 
     function getNewCertifierArgs()
         internal
-        view
+        pure
         returns (CertifierArgs memory certifierArgs)
     {
         certifierArgs = CertifierArgs({
             cid: "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C",
             name: "Verra",
-            agent: msg.sender,
+            agent: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8, // set wallet before deploy
             tokenName: "VERRA",
             tokenSymbol: "VRR",
             tokenDecimals: 18

@@ -15,10 +15,9 @@ contract SetupLilium is Script {
     mapping(uint256 => LiliumArgs) public chainIdToNetworkConfig;
 
     constructor() {
-        chainIdToNetworkConfig[80001] = getMumbaiLiliumArgs();
-        chainIdToNetworkConfig[31337] = getHardhatLiliumArgs();
         chainIdToNetworkConfig[11155111] = getSepoliaLiliumArgs();
-        chainIdToNetworkConfig[383414847825] = getZeniqLiliumArgs();
+        chainIdToNetworkConfig[31337] = getMumbaiLiliumArgs();
+        chainIdToNetworkConfig[80001] = getMumbaiLiliumArgs();
         liliumArgs = chainIdToNetworkConfig[block.chainid];
     }
 
@@ -58,7 +57,7 @@ contract SetupLilium is Script {
         internal
         returns (LiliumArgs memory zeniqLiliumArgs)
     {
-        vm.startBroadcast(vm.envUint("PRIVATE_KEY_LILIUM_HARDHAT"));
+        vm.startBroadcast();
         MockV3Aggregator _mockPriceFeed = new MockV3Aggregator(
             DECIMALS,
             INITIAL_PRICE
@@ -80,7 +79,7 @@ contract SetupLilium is Script {
         internal
         returns (LiliumArgs memory hardhatNetworkConfig)
     {
-        vm.startBroadcast(vm.envUint("PRIVATE_KEY_LILIUM_HARDHAT"));
+        vm.startBroadcast();
         MockV3Aggregator _mockPriceFeed = new MockV3Aggregator(
             DECIMALS,
             INITIAL_PRICE
