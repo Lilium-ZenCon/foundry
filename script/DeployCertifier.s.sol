@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {Certifier} from "@contracts/entities/Certifier.sol";
-import {SetupLilium} from "@utils/setup/SetupLilium.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.s.sol";
 import {SetupCertifier} from "@utils/setup/SetupCertifier.sol";
 
 contract DeployCertifier is Script, SetupCertifier, SetupLilium {

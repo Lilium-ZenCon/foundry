@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {Company} from "@contracts/entities/Company.sol";
-import {SetupLilium} from "@utils/setup/SetupLilium.sol";
+import {SetupLilium} from "@utils/setup/SetupLilium.s.sol";
 import {SetupCompany} from "@utils/setup/SetupCompany.sol";
 
 contract DeployCompany is Script, SetupLilium, SetupCompany {
@@ -19,9 +19,10 @@ contract DeployCompany is Script, SetupLilium, SetupCompany {
             string memory _companyIndustry,
             uint256 _companyAllowance,
             uint256 _companyCompensation,
-            // address _companyAgent // set wallet before deploy
 
-        ) = setupCompany.newCompanyArgs();
+        ) = // address _companyAgent // set wallet before deploy
+
+            setupCompany.newCompanyArgs();
 
         (
             ,
