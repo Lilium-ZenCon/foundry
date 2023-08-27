@@ -20,7 +20,7 @@ contract SetupLilium is Script {
 
     function getSepoliaLiliumArgs()
         internal
-        view
+        pure
         returns (LiliumArgs memory sepoliaNetworkConfig)
     {
         sepoliaNetworkConfig = LiliumArgs({
@@ -30,7 +30,7 @@ contract SetupLilium is Script {
             erc20Portal: 0x4340ac4FcdFC5eF8d34930C96BBac2Af1301DF40,
             dappAddressRelay: 0x8Bbc0e6daB541DF0A9f0bDdA5D41B3B08B081d55,
             priceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306, // ETH / USD
-            agent: msg.sender // set wallet before deploy
+            agent: 0xFb05c72178c0b88BFB8C5cFb8301e542A21aF1b7 // set wallet before deploy
         });
     }
 

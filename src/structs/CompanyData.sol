@@ -21,4 +21,5 @@ struct CompanyData {
     address cartesiEtherPortal;
     address cartesiDAppAddressRelay;
     uint256 compensation;
+    mapping (address => uint256) ledger;   
 }

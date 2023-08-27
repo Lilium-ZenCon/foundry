@@ -26,9 +26,10 @@ contract Company is AccessControl {
     bytes32 constant HARDWARE_ROLE = keccak256("HARDWARE_ROLE");
     bytes32 constant VERIFIER_ROLE = keccak256("VERIFIER_ROLE");
 
-    error DontHaveSuficientAllowance(uint256 _amount);
-    error WithdrawFailed(address _sender, bytes _payload, Proof _proof);
+    error InsuficientAllowance(uint256 _amount);
     error NewAuctionFailed(address _sender, uint256 _amount);
+    error InsufficientBalance(address _sender, uint256 _amount);
+    error WithdrawFailed(address _sender, bytes _payload, Proof _proof);
     error GrantAllowanceFailed(
         address _cartesiERC20Portal,
         address _sender,
@@ -126,8 +127,9 @@ contract Company is AccessControl {
      * @dev This function decrease allowance to mint token. This function is private because only mint function can call this function
      * @param _amount amount of token to decrease allowance
      */
-    function decreaseAllowance(uint256 _amount) private {
+    function _decreaseAllowance(uint256 _amount) private {
         company.allowance -= _amount;
+        company.ledger[msg.sender] += _amount;
     }
 
     /**
@@ -163,11 +165,25 @@ contract Company is AccessControl {
      */
     function mint(uint256 _amount) public onlyRole(AGENT_ROLE) {
         if (company.allowance < _amount) {
-            revert DontHaveSuficientAllowance(_amount);
+            revert InsuficientAllowance(_amount);
         } else {
-            decreaseAllowance(_amount);
-            ICarbonCredit(company.token).mint(msg.sender, _amount);
+            _decreaseAllowance(_amount);
+            ICarbonCredit(company.token).mint(address(this), _amount);
             emit Mint(msg.sender, _amount);
+        }
+    }
+
+    /**
+     * @dev Transfer token (CarbonCredit) to an address by company agent.
+     * @param _to address to transfer token
+     * @param _amount amount of token to transfer
+     */
+    function transferCarbonCredits(address _to, uint256 _amount) public onlyRole(AGENT_ROLE) {
+        if(company.ledger[msg.sender] >=_amount) {
+            revert InsufficientBalance(msg.sender, company.ledger[msg.sender]);
+        } else {
+            company.ledger[msg.sender] -= _amount;
+            IERC20(company.token).transfer(_to, company.ledger[msg.sender]);
         }
     }
 
@@ -192,8 +208,7 @@ contract Company is AccessControl {
         uint256 _duration,
         uint256 _reservePricePerToken
     ) public onlyRole(AGENT_ROLE) {
-        bool approve = ICarbonCredit(company.token).approveFrom(
-            msg.sender,
+        bool approve = IERC20(company.token).approve(
             company.cartesiERC20Portal,
             _amount
         );

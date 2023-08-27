@@ -53,19 +53,19 @@ This repository contains essential documentation to guide you through the setup 
 - After the deploy on localhost (hardhat), we can create a certifier calling the function "newCertifier" from Lilium contract address:
 
     ```bash
-    $ cast send <LILIUM_CONTRACT_ADDRESS> "newCertifier(string, string, address, string, string, uint8)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 "VERRA" "VRR" 18 --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_LILIUM_LOCALHOST
+    $ cast send 0xec68e67d07e07898965e0447a666b37ded9dc3da "newCertifier(string, string, address, string, string, uint8)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" 0xFb05c72178c0b88BFB8C5cFb8301e542A21aF1b7 "VERRA" "VRR" 18 --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY_LILIUM
     ```
 
 - Now, as Certifier Agent, we can create a company with the cast command below:
 
     ```bash
-    $ cast send <CERTIFIER_CONTRACT_ADDRESS> "newCompany(string, string, string, string, uint256, uint256, address)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_CERTIFIER_LOCALHOST
+    $ cast send 0x55a35e0d7ecc4aca7ed29f7366df5ec521cf0c27 "newCompany(string, string, string, string, uint256, uint256, address)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 0xFb05c72178c0b88BFB8C5cFb8301e542A21aF1b7 --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY_LILIUM
     ```
 
 - Before all of this, we, as company agent, have the interface with Cartesi Rollups ready to be called by Auction ans Verifier flows, but before of this we need deploy the cartesi machines verifier and auction, and then after this call the function ```setAuxiliarContracts``` to inform to the deployed DApp what addresses should he call.
 
     ```bash
-    $ cast send <COMPANY_CONTRACT_ADDRESS> "setAuxiliarContracts(address, address)" <AUCTION-CARTESI-MACHINE-CONTRACT-ADDRESS> <VERIFIER-CARTESI-MACHINE-CONTRACT-ADDRESS> --rpc-url $HARDHAT_RPC_URL --private-key $PRIVATE_KEY_COMPANY_LOCALHOST
+    $ cast send 0xa577a4f6e78c000c9823f8473516a471c22be353 "setAuxiliarContracts(address, address)" <AUCTION-CARTESI-MACHINE-CONTRACT-ADDRESS> <VERIFIER-CARTESI-MACHINE-CONTRACT-ADDRESS> --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY_LILIUM
     ```
 
 - Now, as the company's agent, we need to add a hardware address to the company by providing the HARDWARE_ROLE to your address. This hardware will check the real world state:

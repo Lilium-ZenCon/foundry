@@ -65,27 +65,6 @@ contract CarbonCredit is AccessControl, ERC20 {
     }
 
     /**
-     * @notice Approve From
-     * @dev This function approve amount of token (CarbonCredit) from an address to another address
-     * @param _from address to approve token
-     * @param _to address to receive token
-     * @param _amount amount of token to approve
-     */
-    function approveFrom(
-        address _from,
-        address _to,
-        uint256 _amount
-    ) external returns (bool){
-        if(balanceOf(_from) < _amount) {
-            revert InsufficientAmount(_amount);
-        } else {
-            _approve(_from, _to, _amount);
-            emit ApproveFrom(_from, _to, _amount);
-        }
-        return true;
-    }
-
-    /**
      * @notice Retire/Burn Token
      * @dev This function retire/burn token (CarbonCredit) from an address
      * @param _amount amount of token to retire/burn
