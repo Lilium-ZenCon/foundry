@@ -9,9 +9,6 @@ import {SetupDeployerAccount} from "@utils/setup/SetupDeployerAccount.s.sol";
 import {IConsensus} from "@cartesi/contracts/consensus/IConsensus.sol";
 
 contract DeployLilium is Script {
-    uint8 public constant DECIMALS = 8;
-    int256 public constant INITIAL_PRICE = 2000e8;
-
     function run() external {
         SetupCartesiDApp setupCartesiDApp = new SetupCartesiDApp();
         SetupDeployerAccount deployerAccount = new SetupDeployerAccount();
