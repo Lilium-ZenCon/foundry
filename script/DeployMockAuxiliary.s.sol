@@ -9,7 +9,7 @@ import {SetupDeployerAccount} from "@utils/setup/SetupDeployerAccount.s.sol";
 import {IConsensus} from "@cartesi/contracts/consensus/IConsensus.sol";
 
 contract DeployLilium is Script {
-    function run() external {
+    function run() external returns (address, address) {
         SetupCartesiDApp setupCartesiDApp = new SetupCartesiDApp();
         SetupDeployerAccount deployerAccount = new SetupDeployerAccount();
 
@@ -22,11 +22,17 @@ contract DeployLilium is Script {
         ) = setupCartesiDApp.cartesiDAppArgs();
 
         vm.startBroadcast(_deployer);
-        new MockCartesiDApp(
+        MockCartesiDApp verifier = new MockCartesiDApp(
+            _consensus,
+            _owner,
+            _templateHash
+        );
+        MockCartesiDApp auction = new MockCartesiDApp(
             _consensus,
             _owner,
             _templateHash
         );
         vm.stopBroadcast();
+        return (address(verifier), address(auction));
     }
 }

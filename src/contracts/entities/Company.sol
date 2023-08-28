@@ -101,7 +101,7 @@ contract Company is AccessControl {
      * @param _cartesiAuction address of cartesi auction contract
      * @param _cartesiVerifier address of cartesi verifier contract
      */
-    function setAuxiliarContracts(
+    function setAuxiliaryContracts(
         address _cartesiAuction,
         address _cartesiVerifier
     ) public onlyRole(AGENT_ROLE) {
