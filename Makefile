@@ -11,7 +11,7 @@ RPC_URL := $(HARDHAT_RPC_URL)
 HARDWARE_ADDRESS := $(HARDWARE_ADDRESS_HARDHAT)
 PRIVATE_KEY_USER := $(PRIVATE_KEY_USER_HARDHAT)
 COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS_HARDHAT)
-CERTIFER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_HARDHAT)
+CERTIFIER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_HARDHAT)
 PRIVATE_KEY_VERIFER_AGENT := $(PRIVATE_KEY_VERIFER_HARDHAT)
 PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_HARDHAT)
 PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT_HARDHAT)
@@ -26,7 +26,7 @@ ifeq ($(findstring --network sepolia,$(CONFIG)),--network sepolia)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
 	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
 	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS)
-	CERTIFER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
+	CERTIFIER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
 	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT)
 	PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT)
 	PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT)
@@ -38,7 +38,7 @@ else ifeq ($(findstring --network mumbai,$(CONFIG)),--network mumbai)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
 	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
 	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS)
-	CERTIFER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
+	CERTIFIER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
 	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT)
 	PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT)
 	PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT)
@@ -50,7 +50,7 @@ else ifeq ($(findstring --network zeniq,$(CONFIG)),--network zeniq)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
 	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
 	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS)
-	CERTIFER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
+	CERTIFIER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
 	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT)
 	PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT)
 	PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT)
@@ -65,13 +65,13 @@ endef
 
 define create_certifier
 	$(START_LOG)
-	@cast send $(1) "newCertifier(string, string, address, string, string, uint8)" $(2) $(3) $(CERTIFIER_AGENT_ADDRESS) $(4) $(5) $(6) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_LILIUM_AGENT)
+	@cast send $(1) "newCertifier(string, string, address, string, string, uint8)" $(2) $(3) $(4) $(5) $(6) $(7) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_LILIUM_AGENT)
 	$(END_LOG)
 endef
 
 define create_company
 	$(START_LOG)
-	@cast send $(1) "newCompany(string, string, string, string, uint256, uint256, address)" $(2) $(3) $(4) $(5) $(6) $(7) $(COMPANY_AGENT_ADDRESS) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_CERTIFIER_AGENT)
+	@cast send $(1) "newCompany(string, string, string, string, uint256, uint256, address)" $(2) $(3) $(4) $(5) $(6) $(7) $(8) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_CERTIFIER_AGENT)
 	$(END_LOG)
 endef
 
@@ -137,16 +137,15 @@ lilium:
 	@$(deploy_lilium)
 
 certifier:
-	@echo "You, as a lilium's agent, are creating a certifier..."
-	@$(call create_certifier, $(lilium), $(cid), $(name), $(token_name), $(token_symbol), $(token_decimals))
+	@$(call create_certifier, $(lilium), $(cid), $(name), $(CERTIFIER_AGENT_ADDRESS), $(token_name), $(token_symbol), $(token_decimals))
+
+company:
+	@echo "You, as a certifier's agent, are creating a company..."
+	@$(call create_company, $(certifier), $(cid), $(name), $(country), $(industry), $(allowance), $(compensation_per_hour), $(COMPANY_AGENT_ADDRESS))
 
 auxiliary:
 	@echo "You, as the company's agent, are defining the ancillary contracts..."
 	@$(call auxiliary, $(company), $(verifier), $(auction))
-
-company:
-	@echo "You, as a certifier's agent, are creating a company..."
-	@$(call create_company, $(certifier), $(cid), $(name), $(country), $(industry), $(allowance), $(compensation_per_hour))
 
 auction:
 	@echo "You, as a company's agent, are creating an auction..."
