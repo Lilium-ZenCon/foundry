@@ -32,20 +32,33 @@ contract DeployLilium is Script, SetupLilium {
 
         vm.startBroadcast(_deployer);
         if (block.chainid == 31337 || block.chainid == 383414847825) {
-            _PriceFeed = address(new MockV3Aggregator(DECIMALS, INITIAL_PRICE));
+            address _MockPriceFeed = address(new MockV3Aggregator(DECIMALS, INITIAL_PRICE));
             (address verifier, address auction) = auxiliary.deploy();
-            console.log(address(verifier),address(auction));
+            console.log(address(verifier), address(auction));
+
+            Lilium custom_lilium = new Lilium(
+                _cid,
+                _InputBox,
+                _EtherPortal,
+                _ERC20Portal,
+                _DAppAddressRelay,
+                _MockPriceFeed,
+                _agent
+            );
+
+            console.log(address(custom_lilium));
+        } else {
+            Lilium lilium = new Lilium(
+                _cid,
+                _InputBox,
+                _EtherPortal,
+                _ERC20Portal,
+                _DAppAddressRelay,
+                _PriceFeed,
+                _agent
+            );
+            console.log(address(lilium));
         }
-        Lilium lilium = new Lilium(
-            _cid,
-            _InputBox,
-            _EtherPortal,
-            _ERC20Portal,
-            _DAppAddressRelay,
-            _PriceFeed,
-            _agent
-        );
         vm.stopBroadcast();
-        console.log(address(lilium));
     }
 }

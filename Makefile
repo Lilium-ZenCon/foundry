@@ -138,7 +138,7 @@ lilium:
 
 certifier:
 	@echo "You, as a lilium's agent, are creating a certifier..."
-	@$(call create_certifier, $(lilium), $(CERTIFER_AGENT_ADDRESS))
+	@$(call create_certifier, $(lilium), $(cid), $(name), $(token_name), $(token_symbol), $(token_decimals))
 
 auxiliary:
 	@echo "You, as the company's agent, are defining the ancillary contracts..."
@@ -146,15 +146,15 @@ auxiliary:
 
 company:
 	@echo "You, as a certifier's agent, are creating a company..."
-	@$(call create_company, $(certifier), $(COMPANY_AGENT_ADDRESS))
+	@$(call create_company, $(certifier), $(cid), $(name), $(country), $(industry), $(allowance), $(compensation_per_hour))
 
 auction:
 	@echo "You, as a company's agent, are creating an auction..."
-	@$(call new_auction, $(company))
+	@$(call new_auction, $(company), $(amount), $(duration), $(reserve_price_per_token))
 
 bid:
 	@echo "You, as a user, are bidding..."
-	@$(call new_bid, $(company))
+	@$(call new_bid, $(company), $(interested_quantity))
 
 device:
 	@echo "You, as a company's agent, are adding a device to the verifier system..."
@@ -162,11 +162,11 @@ device:
 
 mint:
 	@echo "You, as a company's agent, are minting tokens..."
-	@$(call mint, $(company))
+	@$(call mint, $(company), $(amount))
 
 transfer:
 	@echo "You, as a company's agent, are transfering tokens..."
-	@$(call transfer, $(company), $(to))
+	@$(call transfer, $(company), $(to), $(amount))
 
 verify:
 	@echo "You, as a verifier's device, are verifying the real world state..."
