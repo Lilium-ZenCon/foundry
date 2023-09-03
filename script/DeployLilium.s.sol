@@ -3,6 +3,8 @@
 pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
+import {console} from "forge-std/console.sol";
+import {DeployAuxiliary} from "@script/DeployMockAuxiliary.sol";
 import {Lilium} from "@contracts/entities/Lilium.sol";
 import {SetupLilium} from "@utils/setup/SetupLilium.s.sol";
 import {MockV3Aggregator} from "@mocks/MockV3Aggregator.sol";
@@ -15,7 +17,7 @@ contract DeployLilium is Script, SetupLilium {
     function run() external {
         SetupLilium helperConfig = new SetupLilium();
         SetupDeployerAccount deployerAccount = new SetupDeployerAccount();
-
+        DeployAuxiliary auxiliary = new DeployAuxiliary();
         uint256 _deployer = deployerAccount.deployerAccountArgs();
 
         (
@@ -31,8 +33,10 @@ contract DeployLilium is Script, SetupLilium {
         vm.startBroadcast(_deployer);
         if (block.chainid == 31337 || block.chainid == 383414847825) {
             _PriceFeed = address(new MockV3Aggregator(DECIMALS, INITIAL_PRICE));
+            (address verifier, address auction) = auxiliary.deploy();
+            console.log(address(verifier),address(auction));
         }
-        new Lilium(
+        Lilium lilium = new Lilium(
             _cid,
             _InputBox,
             _EtherPortal,
@@ -42,5 +46,6 @@ contract DeployLilium is Script, SetupLilium {
             _agent
         );
         vm.stopBroadcast();
+        console.log(address(lilium));
     }
 }

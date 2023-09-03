@@ -24,25 +24,25 @@ contract SetupDeployerAccount is Script{
         returns (DeployerAccountArgs memory sepoliaDeployerAccount)
     {
         sepoliaDeployerAccount = DeployerAccountArgs({
-            deployer: vm.envUint("PRIVATE_KEY_LILIUM")
+            deployer: vm.envUint("PRIVATE_KEY_LILIUM_AGENT")
         });
     }
 
     function getMumbaiDeployerAccount() internal view returns(DeployerAccountArgs memory mumbaiDeployerAccount) {
         mumbaiDeployerAccount = DeployerAccountArgs({
-            deployer: vm.envUint("PRIVATE_KEY_LILIUM")
+            deployer: vm.envUint("PRIVATE_KEY_LILIUM_AGENT")
         });
     }
 
     function getZeniqDeployerAccount() internal view returns(DeployerAccountArgs memory zeniqDeployerAccount) {
         zeniqDeployerAccount = DeployerAccountArgs({
-            deployer: vm.envUint("PRIVATE_KEY_LILIUM")
+            deployer: vm.envUint("PRIVATE_KEY_LILIUM_AGENT")
         });
     }
 
     function getHardhatDeployerAccount() internal view returns(DeployerAccountArgs memory hardhatDeployerAccount) {
         hardhatDeployerAccount = DeployerAccountArgs({
-            deployer: vm.envUint("PRIVATE_KEY_LILIUM_HARDHAT")
+            deployer: vm.envUint("PRIVATE_KEY_LILIUM_AGENT_HARDHAT")
         });
     }
 }

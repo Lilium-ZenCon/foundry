@@ -68,7 +68,7 @@ contract SetupLilium is Script {
 
     function getHardhatLiliumArgs()
         internal
-        view
+        pure
         returns (LiliumArgs memory hardhatNetworkConfig)
     {
         hardhatNetworkConfig = LiliumArgs({
@@ -78,7 +78,7 @@ contract SetupLilium is Script {
             erc20Portal: 0x4340ac4FcdFC5eF8d34930C96BBac2Af1301DF40,
             dappAddressRelay: 0x8Bbc0e6daB541DF0A9f0bDdA5D41B3B08B081d55,
             priceFeed: address(0), // ETH / USD mocked contract
-            agent: msg.sender // set wallet before deploy
+            agent: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 // set wallet before deploy
         });
     }
 }

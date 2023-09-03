@@ -1,115 +1,177 @@
-# Inclua o arquivo .env
-include .env
-export
+# LOADING ENV FILE
+-include .env
 
-RPC_URL ?= "http://rpc:8545"
+.PHONY: lilium
 
-# Comandos
+# DEFAULT VARIABLES	
+START_LOG = @echo "==================== START OF LOG ===================="
+END_LOG = @echo "==================== END OF LOG ======================"
+
+RPC_URL := $(HARDHAT_RPC_URL)
+HARDWARE_ADDRESS := $(HARDWARE_ADDRESS_HARDHAT)
+PRIVATE_KEY_USER := $(PRIVATE_KEY_USER_HARDHAT)
+COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS_HARDHAT)
+CERTIFER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_HARDHAT)
+PRIVATE_KEY_VERIFER_AGENT := $(PRIVATE_KEY_VERIFER_HARDHAT)
+PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_HARDHAT)
+PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT_HARDHAT)
+PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT_HARDHAT)
+PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT_HARDHAT)
+DEPLOY_NETWORK_ARGS := --rpc-url $(HARDHAT_RPC_URL) --broadcast -vvvvv
+
+ifeq ($(findstring --network sepolia,$(CONFIG)),--network sepolia)
+	RPC_URL := $(SEPOLIA_RPC_URL)
+	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS)
+	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
+	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
+	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS)
+	CERTIFER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
+	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT)
+	PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT)
+	PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT)
+	PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT)
+	DEPLOY_NETWORK_ARGS := --rpc-url $(SEPOLIA_RPC_URL) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvvv
+else ifeq ($(findstring --network mumbai,$(CONFIG)),--network mumbai)
+	RPC_URL := $(MUMBAI_RPC_URL)
+	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS)
+	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
+	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
+	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS)
+	CERTIFER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
+	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT)
+	PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT)
+	PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT)
+	PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT)
+	DEPLOY_NETWORK_ARGS := --rpc-url $(MUMBAI_RPC_URL) --broadcast --verify --etherscan-api-key $(POLYGONSCAN_API_KEY) -vvvvv
+else ifeq ($(findstring --network zeniq,$(CONFIG)),--network zeniq)
+	RPC_URL := $(ZENIQ_RPC_URL)
+	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS)
+	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
+	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
+	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS)
+	CERTIFER_AGENT_ADDRESS := $(CERTIFER_AGENT_ADDRESS)
+	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT)
+	PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT)
+	PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT)
+	PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT)
+	DEPLOY_NETWORK_ARGS := --rpc-url $(ZENIQ_RPC_URL) --broadcast -vvvvv
+endif
+
+define deploy_lilium
+	$(START_LOG)
+	@forge script script/DeployLilium.s.sol $(DEPLOY_NETWORK_ARGS)
+	$(END_LOG)
+endef
+
+define create_certifier
+	$(START_LOG)
+	@cast send $(1) "newCertifier(string, string, address, string, string, uint8)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" $(CERTIFIER_AGENT_ADDRESS) "VERRA" "VRR" 18 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_LILIUM_AGENT)
+	$(END_LOG)
+endef
+
+define create_company
+	$(START_LOG)
+	@cast send $(1) "newCompany(string, string, string, string, uint256, uint256, address)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 $(COMPANY_AGENT_ADDRESS) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_CERTIFIER_AGENT)
+	$(END_LOG)
+endef
+
+define new_auction
+	$(START_LOG)
+	@cast send $(1) "newAuction(uint256, uint256, uint256)" 100000 1 1 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_AGENT)
+	$(END_LOG)
+endef
+
+define finish_auction
+	$(START_LOG)
+	@cast send $(1) "finishAuction()" --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_AGENT)
+	$(END_LOG)
+endef
+
+define new_bid
+	$(START_LOG)
+	@cast send $(1) "newBid(uint256)" 9000 --value 0.9ether --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_USER)
+	$(END_LOG)
+endef
+
+define add_device
+	$(START_LOG)
+	@cast send $(1) "addHardwareDevice(address)" $(HARDWARE_ADDRESS) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_AGENT)
+	$(END_LOG)
+endef
+
+define mint
+	$(START_LOG)
+	@cast send $(1) "mint(uint256 _amount)" 1000000000000 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_AGENT)
+	$(END_LOG)
+endef
+
+define transfer
+	$(START_LOG)
+	@cast send $(1) "transfer(address, uint256)" $(2) 1000000 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_AGENT)
+	$(END_LOG)
+endef
+
+define auxiliary
+	$(START_LOG)
+	@cast send $(1) "setAuxiliaryContracts(address, address)" $(2) $(3) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_AGENT)
+	$(END_LOG)
+endef
+
+define verify
+	$(START_LOG)
+	@cast send $(1) "verifyRealWorldState(string)" $(2) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_VERIFER_AGENT)
+	$(END_LOG)
+endef
+
 env: .env.tmpl
 	cp .env.tmpl .env
 
-deploy-lilium-hardhat:
+help:
+	@echo "Usage:"
+	@echo "  make deploy [ARGS=...]\n    example: make deploy ARGS=\"--network sepolia\""
+	@echo ""
+	@echo "  make fund [ARGS=...]\n    example: make deploy ARGS=\"--network sepolia\""
+
+lilium:
 	@echo "Deploying Lilium..."
-	@forge script script/DeployLilium.s.sol --rpc-url $(RPC_URL)
+	@$(deploy_lilium)
 
-new-auction-hardhat:
-	@echo "Creating an auction..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "newAuction(uint256, uint256, uint256)" 100000 1 1 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AGENT_HARDHAT)
+certifier:
+	@echo "You, as a lilium's agent, are creating a certifier..."
+	@$(call create_certifier, $(lilium), $(CERTIFER_AGENT_ADDRESS))
 
-new-bid-hardhat:
-	@echo "Creating a bid..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "newBid(uint256)" 9000 --value 0.9ether --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_USER_HARDHAT)
+auxiliary:
+	@echo "You, as the company's agent, are defining the ancillary contracts..."
+	@$(call auxiliary, $(company), $(verifier), $(auction))
 
-create-certifier-hardhat:
-	@echo "Creating a certifier..."
-	@cast send $(LILIUM_ADDRESS_HARDHAT) "newCertifier(string, string, address, string, string, uint8)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" $(CERTIFIER_ADDRESS_HARDHAT) "VERRA" "VRR" 18 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_LILIUM_HARDHAT)
+company:
+	@echo "You, as a certifier's agent, are creating a company..."
+	@$(call create_company, $(certifier), $(COMPANY_AGENT_ADDRESS))
 
-create-company-hardhat:
-	@echo "Creating a company..."
-	@cast send $(CERTIFIER_CONTRACT_ADDRESS) "newCompany(string, string, string, string, uint256, uint256, address)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 $(COMPANY_ADDRESS_HARDHAT) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_CERTIFIER_HARDHAT)
+auction:
+	@echo "You, as a company's agent, are creating an auction..."
+	@$(call new_auction, $(company))
 
-deploy-mock-auxiliary-hardhat:
-	@echo "Deploying mocked auxiliary contracts..."
-	@forge script script/DeployMockAuxiliary.s.sol --rpc-url $(RPC_URL)
+bid:
+	@echo "You, as a user, are bidding..."
+	@$(call new_bid, $(company))
 
-set-auxiliar-contracts-hardhat:
-	@echo "Setting auxiliar contracts..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "setAuxiliarContracts(address, address)" $(AUCTION_CARTESI_MACHINE_CONTRACT_ADDRESS) $(VERIFIER_CARTESI_MACHINE_CONTRACT_ADDRESS) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_HARDHAT)
-
-add-hardware-device-hardhat:
-	@echo "Adding a hardware device..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "addHardwareDevice(address)" $(HARDWARE_ADDRESS_HARDHAT) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_HARDHAT)
-
-mint-hardhat:
-	@echo "Minting tokens..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "mint(address, uint256)" $(AGENT_ADDRESS_HARDHAT) 1000000000000 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AGENT_HARDHAT)
-
-transfer-hardhat:
-	@echo "Transfering tokens..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "transfer(address, uint256)" $(AGENT_ADDRESS_HARDHAT) 1000000 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AGENT_HARDHAT)
-
-verify-real-world-state-hardhat:
-	@echo "Verifying real world state..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "verifyRealWorldState(string)" $(REAL_WORLD_DATA) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_VERIFER_HARDHAT)
-
-increase-allowance-hardhat:
-	@echo "Increasing allowance..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "increaseAllowance()" --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AUCTION_HARDHAT)
-
-finish-auction-hardhat:
-	@echo "Finishing auction..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "finishAuction()" --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AUCTION_HARDHAT)
-
-____________________________________________________________________________________________________________________________________________________________
-
-deploy-lilium:
-	@echo "Deploying Lilium..."
-	@forge script script/DeployLilium.s.sol --rpc-url $(RPC_URL)
-
-new-auction:
-	@echo "Creating an auction..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "newAuction(uint256, uint256, uint256)" 100000 1 1 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AGENT_HARDHAT)
-
-new-bid:
-	@echo "Creating a bid..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "newBid(uint256)" 9000 --value 0.9ether --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_USER_HARDHAT)
-
-create-certifier:
-	@echo "Creating a certifier..."
-	@cast send $(LILIUM_ADDRESS_HARDHAT) "newCertifier(string, string, address, string, string, uint8)" "QmRSAi9LVTuzN3zLu3kKeiESDug27gE3F6CFYvuMLFrt2C" "Verra" $(CERTIFIER_ADDRESS_HARDHAT) "VERRA" "VRR" 18 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_LILIUM_HARDHAT)
-
-create-company:
-	@echo "Creating a company..."
-	@cast send $(CERTIFIER_CONTRACT_ADDRESS) "newCompany(string, string, string, string, uint256, uint256, address)" "QmQp9iagQS9uEQPV7hg5YGwWmCXxAs2ApyBCkpcu9ZAK6k" "Gerdau" "Brazil" "Steelworks" 1000000000000 10000 $(COMPANY_ADDRESS_HARDHAT) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_CERTIFIER_HARDHAT)
-
-deploy-mock-auxiliary:
-	@echo "Deploying mocked auxiliary contracts..."
-	@forge script script/DeployMockAuxiliary.s.sol --rpc-url $(RPC_URL)
-
-set-auxiliar-contracts:
-	@echo "Setting auxiliar contracts..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "setAuxiliarContracts(address, address)" $(AUCTION_CARTESI_MACHINE_CONTRACT_ADDRESS) $(VERIFIER_CARTESI_MACHINE_CONTRACT_ADDRESS) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_HARDHAT)
-
-add-hardware-device:
-	@echo "Adding a hardware device..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "addHardwareDevice(address)" $(HARDWARE_ADDRESS_HARDHAT) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_COMPANY_HARDHAT)
+device:
+	@echo "You, as a company's agent, are adding a device to the verifier system..."
+	@$(call add_device, $(company))
 
 mint:
-	@echo "Minting tokens..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "mint(address, uint256)" $(AGENT_ADDRESS_HARDHAT) 1000000000000 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AGENT_HARDHAT)
+	@echo "You, as a company's agent, are minting tokens..."
+	@$(call mint, $(company))
 
 transfer:
-	@echo "Transfering tokens..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "transfer(address, uint256)" $(AGENT_ADDRESS_HARDHAT) 1000000 --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AGENT_HARDHAT)
+	@echo "You, as a company's agent, are transfering tokens..."
+	@$(call transfer, $(company), $(to))
 
-verify-real-world-state:
-	@echo "Verifying real world state..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "verifyRealWorldState(string)" $(REAL_WORLD_DATA) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_VERIFER_HARDHAT)
-
-increase-allowance:
-	@echo "Increasing allowance..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "increaseAllowance()" --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AUCTION_HARDHAT)
+verify:
+	@echo "You, as a verifier's device, are verifying the real world state..."
+	@$(call verify, $(company), $(REAL_WORLD_DATA))
 
 finish-auction:
-	@echo "Finishing auction..."
-	@cast send $(COMPANY_CONTRACT_ADDRESS) "finishAuction()" --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_AUCTION_HARDHAT)
+	@echo "You, as a company's agent, are finishing the auction..."
+	@$(call finish_auction, $(company))
