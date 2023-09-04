@@ -5,4 +5,4 @@ out/
 /broadcast/**/dry-run/
 docs/
 .env
-./deployments/localhost
+deployments/
