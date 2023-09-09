@@ -17,11 +17,11 @@ PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_HARDHAT)
 PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT_HARDHAT)
 PRIVATE_KEY_HARDWARE_AGENT := $(PRIVATE_KEY_HARDWARE_AGENT_HARDHAT)
 PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT_HARDHAT)
-DEPLOY_NETWORK_ARGS := --rpc-url $(HARDHAT_RPC_URL) --broadcast -vvvvv
+DEPLOY_NETWORK_ARGS := script/DeployLiliumMock.s.sol --rpc-url $(HARDHAT_RPC_URL) --broadcast -vvvvv
 
 ifeq ($(findstring --network sepolia,$(CONFIG)),--network sepolia)
 	RPC_URL := $(SEPOLIA_RPC_URL)
-	DEPLOY_NETWORK_ARGS := --rpc-url $(SEPOLIA_RPC_URL) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvvv
+	DEPLOY_NETWORK_ARGS := script/DeployLilium.s.sol --rpc-url $(SEPOLIA_RPC_URL) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvvv
 	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
 	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
@@ -33,7 +33,7 @@ ifeq ($(findstring --network sepolia,$(CONFIG)),--network sepolia)
 	PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT)
 else ifeq ($(findstring --network mumbai,$(CONFIG)),--network mumbai)
 	RPC_URL := $(MUMBAI_RPC_URL)
-	DEPLOY_NETWORK_ARGS := --rpc-url $(MUMBAI_RPC_URL) --broadcast --verify --etherscan-api-key $(POLYGONSCAN_API_KEY) -vvvvv
+	DEPLOY_NETWORK_ARGS := script/DeployLilium.s.sol --rpc-url $(MUMBAI_RPC_URL) --broadcast --verify --etherscan-api-key $(POLYGONSCAN_API_KEY) -vvvvv
 	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
 	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
@@ -45,7 +45,7 @@ else ifeq ($(findstring --network mumbai,$(CONFIG)),--network mumbai)
 	PRIVATE_KEY_CERTIFIER_AGENT := $(PRIVATE_KEY_CERTIFIER_AGENT)
 else ifeq ($(findstring --network zeniq,$(CONFIG)),--network zeniq)
 	RPC_URL := $(ZENIQ_RPC_URL)
-	DEPLOY_NETWORK_ARGS := --rpc-url $(ZENIQ_RPC_URL) --broadcast -vvvvv
+	DEPLOY_NETWORK_ARGS := script/DeployLiliumMock.s.sol --rpc-url $(ZENIQ_RPC_URL) --broadcast -vvvvv
 	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER)
 	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFER)
@@ -59,7 +59,7 @@ endif
 
 define deploy_lilium
 	$(START_LOG)
-	@forge script script/DeployLilium.s.sol $(DEPLOY_NETWORK_ARGS)
+	@forge script $(DEPLOY_NETWORK_ARGS) -vvvvv
 	$(END_LOG)
 endef
 

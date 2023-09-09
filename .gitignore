@@ -6,3 +6,4 @@ out/
 docs/
 .env
 deployments/
+/broadcast

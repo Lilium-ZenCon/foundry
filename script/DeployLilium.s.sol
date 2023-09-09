@@ -4,22 +4,18 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
-import {DeployAuxiliary} from "@script/DeployMockAuxiliary.sol";
 import {Lilium} from "@contracts/entities/Lilium.sol";
 import {SetupLilium} from "@utils/setup/SetupLilium.s.sol";
-import {MockV3Aggregator} from "@mocks/MockV3Aggregator.sol";
 import {SetupDeployerAccount} from "@utils/setup/SetupDeployerAccount.s.sol";
 
-contract DeployLilium is Script, SetupLilium {
+contract DeployLilium is Script {
     uint8 public constant DECIMALS = 8;
     int256 public constant INITIAL_PRICE = 2000e8;
+    SetupLilium helperConfig = new SetupLilium();
+    SetupDeployerAccount deployerAccount = new SetupDeployerAccount();
+    uint256 _deployer = deployerAccount.deployerAccountArgs();
 
     function run() external {
-        SetupLilium helperConfig = new SetupLilium();
-        SetupDeployerAccount deployerAccount = new SetupDeployerAccount();
-        DeployAuxiliary auxiliary = new DeployAuxiliary();
-        uint256 _deployer = deployerAccount.deployerAccountArgs();
-
         (
             string memory _cid,
             address _InputBox,
@@ -29,36 +25,17 @@ contract DeployLilium is Script, SetupLilium {
             address _PriceFeed,
             address _agent
         ) = helperConfig.liliumArgs();
-
         vm.startBroadcast(_deployer);
-        if (block.chainid == 31337 || block.chainid == 383414847825) {
-            address _MockPriceFeed = address(new MockV3Aggregator(DECIMALS, INITIAL_PRICE));
-            (address verifier, address auction) = auxiliary.deploy();
-            console.log(address(verifier), address(auction));
-
-            Lilium custom_lilium = new Lilium(
-                _cid,
-                _InputBox,
-                _EtherPortal,
-                _ERC20Portal,
-                _DAppAddressRelay,
-                _MockPriceFeed,
-                _agent
-            );
-
-            console.log(address(custom_lilium));
-        } else {
-            Lilium lilium = new Lilium(
-                _cid,
-                _InputBox,
-                _EtherPortal,
-                _ERC20Portal,
-                _DAppAddressRelay,
-                _PriceFeed,
-                _agent
-            );
-            console.log(address(lilium));
-        }
+        Lilium lilium = new Lilium(
+            _cid,
+            _InputBox,
+            _EtherPortal,
+            _ERC20Portal,
+            _DAppAddressRelay,
+            _PriceFeed,
+            _agent
+        );
+        console.log(address(lilium));
         vm.stopBroadcast();
     }
 }
