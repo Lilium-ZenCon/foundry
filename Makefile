@@ -12,7 +12,6 @@ HARDWARE_ADDRESS := $(HARDWARE_ADDRESS_HARDHAT)
 PRIVATE_KEY_USER := $(PRIVATE_KEY_USER_HARDHAT)
 COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS_HARDHAT)
 CERTIFIER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_HARDHAT)
-PRIVATE_KEY_VERIFER_AGENT := $(PRIVATE_KEY_VERIFER_HARDHAT)
 PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_HARDHAT)
 PRIVATE_KEY_COMPANY_AGENT := $(PRIVATE_KEY_COMPANY_AGENT_HARDHAT)
 PRIVATE_KEY_HARDWARE := $(PRIVATE_KEY_HARDWARE_HARDHAT)
@@ -24,7 +23,6 @@ ifeq ($(CONFIG),--network sepolia)
 	DEPLOY_NETWORK_ARGS := script/DeployLilium.s.sol --rpc-url $(SEPOLIA_RPC_URL) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvvv
 	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS_TESTNET)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER_TESTNET)
-	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFIER_TESTNET)
 	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS_TESTNET)
 	CERTIFIER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_TESTNET)
 	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_TESTNET)
@@ -36,7 +34,6 @@ else ifeq ($(findstring --network mumbai,$(CONFIG)),--network mumbai)
 	DEPLOY_NETWORK_ARGS := script/DeployLilium.s.sol --rpc-url $(MUMBAI_RPC_URL) --broadcast --verify --etherscan-api-key $(POLYGONSCAN_API_KEY) -vvvvv
 	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS_TESTNET)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER_TESTNET)
-	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFIER_TESTNET)
 	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS_TESTNET)
 	CERTIFIER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_TESTNET)
 	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_TESTNET)
@@ -48,7 +45,6 @@ else ifeq ($(findstring --network zeniq,$(CONFIG)),--network zeniq)
 	DEPLOY_NETWORK_ARGS := script/DeployLiliumMock.s.sol --rpc-url $(ZENIQ_RPC_URL) --broadcast -vvvvv
 	HARDWARE_ADDRESS := $(HARDWARE_ADDRESS_TESTNET)
 	PRIVATE_KEY_USER := $(PRIVATE_KEY_USER_TESTNET)
-	PRIVATE_KEY_VERIFER := $(PRIVATE_KEY_VERIFIER_TESTNET)
 	COMPANY_AGENT_ADDRESS := $(COMPANY_AGENT_ADDRESS_TESTNET)
 	CERTIFIER_AGENT_ADDRESS := $(CERTIFIER_AGENT_ADDRESS_TESTNET)
 	PRIVATE_KEY_LILIUM_AGENT := $(PRIVATE_KEY_LILIUM_AGENT_TESTNET)
@@ -123,6 +119,12 @@ define verify
 	$(END_LOG)
 endef
 
+define retire
+	$(START_LOG)
+	@cast send $(1) "retire(uint256)" $(2) --rpc-url $(RPC_URL) --private-key $(PRIVATE_KEY_USER)
+	$(END_LOG)
+endef
+
 env: .env.tmpl
 	cp .env.tmpl .env
 
@@ -170,6 +172,10 @@ transfer:
 verify:
 	@echo "You, as a verifier's device, are verifying the real world state..."
 	@$(call verify, $(company), $(REAL_WORLD_DATA))
+
+retire:
+	@echo "You, as a user, are retiring tokens..."
+	@$(call retire, $(token), $(amount))
 
 finish-auction:
 	@echo "You, as a company's agent, are finishing the auction..."
