@@ -179,7 +179,7 @@ contract Company is AccessControl {
      * @param _amount amount of token to transfer
      */
     function transferCarbonCredits(address _to, uint256 _amount) public onlyRole(AGENT_ROLE) {
-        if(company.ledger[msg.sender] >=_amount) {
+        if(company.ledger[msg.sender] <=_amount) {
             revert InsufficientBalance(msg.sender, company.ledger[msg.sender]);
         } else {
             company.ledger[msg.sender] -= _amount;
