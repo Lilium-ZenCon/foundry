@@ -127,9 +127,9 @@ contract Company is AccessControl {
      * @dev This function decrease allowance to mint token. This function is private because only mint function can call this function
      * @param _amount amount of token to decrease allowance
      */
-    function _decreaseAllowance(uint256 _amount) private {
+    function _decreaseAllowance(address _sender, uint256 _amount) private {
         company.allowance -= _amount;
-        company.ledger[msg.sender] += _amount;
+        company.ledger[_sender] += _amount;
     }
 
     /**
@@ -167,7 +167,7 @@ contract Company is AccessControl {
         if (company.allowance < _amount) {
             revert InsuficientAllowance(_amount);
         } else {
-            _decreaseAllowance(_amount);
+            _decreaseAllowance(msg.sender, _amount);
             ICarbonCredit(company.token).mint(address(this), _amount);
             emit Mint(msg.sender, _amount);
         }
@@ -183,7 +183,7 @@ contract Company is AccessControl {
             revert InsufficientBalance(msg.sender, company.ledger[msg.sender]);
         } else {
             company.ledger[msg.sender] -= _amount;
-            IERC20(company.token).transfer(_to, company.ledger[msg.sender]);
+            IERC20(company.token).transfer(_to, _amount);
         }
     }
 

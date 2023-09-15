@@ -155,7 +155,7 @@ auction:
 
 bid:
 	@echo "You, as a user, are bidding..."
-	@$(call new_bid, $(company), $(interested_quantity))
+	@$(call new_bid, $(company), $(interested_quantity), $(value))
 
 device:
 	@echo "You, as a company's agent, are adding a device to the verifier system..."
